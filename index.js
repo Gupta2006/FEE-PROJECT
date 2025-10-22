@@ -6,7 +6,6 @@
     loginBtn.onclick = () => {
       modal.style.display = "flex";
     };
-
     // Close modal
     closeBtn.onclick = () => {
       modal.style.display = "none";
