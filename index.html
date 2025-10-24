@@ -1,42 +1,79 @@
 <!DOCTYPE html>
 <head>
-  <title>HealthTrack</title>
+  <title>!HealthVerse!</title>
   <link rel="stylesheet" href="index.css">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3292/3292214.png">
   <link rel="stylesheet" href="login.css">
   <link rel="stylesheet" href="slider.css">
   <link rel="stylesheet" href="subscription.css">
 </head>
-
-
-
 <body>
   <!-- Navbar -->
   <header>
     <div class="logo">
       <img src="Screenshot 2025-08-30 121152.png" alt="Workout">
-      HealthTrack
+      !HealthVerse!
     </div>
     <nav>
       <a href="#">Dashboard</a>
       <a href="#ai">AI Analysis</a>
-      <a href="#nutrition">Nutrition</a>
+      <a href="#nutrition">Nutrition</a> 
       <a href="#sleep">Sleep</a>
-      <a href="#anywhere">Access</a>
+      
       <a href="#subscription">Subscription</a>
     </nav>
-<!-- Login Button Animation -->
-    <a href="http://localhost:5500" class="button">
-    <span class="button__text"> Login </span>
-    <img src="img/cone.png" alt="" class="button__cone" />
-    <img src="img/torus.png" alt="" class="button__torus" />
-    <img src="img/icosahedron.png" alt="" class="button__icosahedron" />
-    <img src="img/sphere.png" alt="" class="button__sphere" />
-  </a>
+  <!-- ✅ Login Button -->
+<a href="#" id="loginBtn" class="button">
+  <span class="button__text">Login</span>
+  <img src="img/cone.png" alt="" class="button__cone" />
+  <img src="img/torus.png" alt="" class="button__torus" />
+  <img src="img/icosahedron.png" alt="" class="button__icosahedron" />
+  <img src="img/sphere.png" alt="" class="button__sphere" />
+</a>
+<!-- ✅ Popup Modal -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Choose Login Type</h2>
+    <button class="role-btn" data-role="owner">Owner</button>
+    <button class="role-btn" data-role="trainer">Trainer</button>
+    <button class="role-btn" data-role="user">User</button>
+  </div>
+</div>
+  <script>
+  const modal = document.getElementById("loginModal");
+  const loginBtn = document.getElementById("loginBtn");
+  const closeBtn = document.querySelector(".close");
 
+  // Open modal
+  loginBtn.onclick = function (e) {
+    e.preventDefault();
+    modal.style.display = "block";
+  };
+
+  // Close modal
+  closeBtn.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // Close if click outside
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  // Role button click
+  const roleButtons = document.querySelectorAll(".role-btn");
+  roleButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const role = btn.dataset.role;
+      // Redirect to OTP login with role as query
+      window.location.href = `http://localhost:5500/?role=${role}`;
+    });
+  });
+</script>
   </header> 
-
-
 
 <!-- Slideshow Section -->
 <div class="container">
@@ -48,23 +85,13 @@
             </div>
             
             <div class="mySlides fade">
-                <img src="https://cdn.prod.website-files.com/64b2d3707af835ff71c4003d/64d6a5b4d31dcd70b12b0c43_pa-health-magazine-feature-not-another-sleepless-night.png" class="slide-image" alt="Rocky beach with waves crashing">
+                <img src="slide2.png" class="slide-image" alt="Rocky beach with waves crashing">
                
             </div>
             
             <div class="mySlides fade">
-                <img src="https://cdn.trendhunterstatic.com/thumbs/584/ai-body-scan.jpeg?auto=webp" class="slide-image" alt="Forest path with sunlight filtering through trees">
+                <img src="slide3.png" class="slide-image" alt="Forest path with sunlight filtering through trees">
               
-            </div>
-            
-            <div class="mySlides fade">
-                <img src="https://cdn.wedevs.com/uploads/2021/08/create-subscription-based-membership-site-using-wordpress-1.png" class="slide-image" alt="Aerial view of colorful landscape">
-               
-            </div>
-            
-            <div class="mySlides fade">
-                <img src="https://img.freepik.com/free-photo/front-view-man-doing-sport-with-stats_23-2150040494.jpg?semt=ais_hybrid&w=740&q=80" class="slide-image" alt="Snow covered mountain peaks">
-               
             </div>
             
             <button class="prev" onclick="plusSlides(-1)" aria-label="Previous slide">&#10094;</button>
@@ -88,20 +115,11 @@
     </div>
 <!-- Slideshow Section End-->
 
-   <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2>Choose Login</h2>
-      <button onclick="window.location.href='signin_owner.html'">Owner</button>
-      <button onclick="window.location.href='signin_trainer.html'">Trainer</button>
-      <button onclick="window.location.href='signin.html'">User</button>
-    </div>
-  </div>
 
   <!-- Body Analysis -->
   
 
-  <section class="ai-body-scan">
+  <section id="ai" class="ai-body-scan">
   <div class="scan-overlay"></div>
 
   <div class="scan-left">
@@ -131,11 +149,11 @@
 
   <div class="scan-right">
     <div class="holo-grid"></div>
-    <img src="https://img.freepik.com/premium-vector/futuristic-medical-symbols-scan-web-interface-visualization-digital-human-verify_80590-3635.jpg?semt=ais_hybrid&w=740&q=80" alt="AI Body Visualization" class="body-holo">
+    <img src="1.jpg" alt="AI Body Visualization" class="body-holo">
   </div>
 </section>
   <!-- Nutrition -->
-<section class="ai-body-scan">
+<section id="nutrition" class="ai-body-scan">
   <div class="scan-overlay"></div>
 
   <div class="scan-left">
@@ -164,7 +182,7 @@
 
   <div class="scan-right">
     <div class="holo-grid"></div>
-    <img src="https://fablstyle.com/wp-content/uploads/2025/03/Smart-meal-planning-using-AI-technology-for-a-personalized-diet-800x500.png" alt="AI Body Visualization" class="body-holo">
+    <img src="2.png" alt="AI Body Visualization" class="body-holo">
   </div>
 </section>
 
@@ -172,7 +190,7 @@
   <!-- Sleep Analysis -->
 
 
-<section class="ai-body-scan">
+<section id="sleep" class="ai-body-scan">
   <div class="scan-overlay"></div>
 
   <div class="scan-left">
@@ -200,14 +218,14 @@
 
   <div class="scan-right">
     <div class="holo-grid"></div>
-    <img src="https://services.meteored.com/img/article/ai-tool-offers-breakthrough-in-diagnosing-sleep-disorder-linked-to-parkinson-s-1737558297091_512.jpg" alt="AI Body Visualization" class="body-holo">
+    <img src="3.png" alt="AI Body Visualization" class="body-holo">
   </div>
 </section>
 
 
 
   <!-- Subscription -->
-<section class="subscription-section">
+<section id="subscription"class="subscription-section">
   <div class="subscription-container">
     <!-- Basic Plan -->
     <div class="plan">
@@ -264,12 +282,11 @@
                 <h3>About Us</h3>
                 <p>We create stunning digital experiences with cutting-edge design and technology. Our mission is to transform ideas into exceptional digital solutions.</p>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                </div>
+    <a href="https://github.com/"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzgINM0sHk37IgIHQXRdj25k0wDLRpg9i4Og&s" alt="Facebook" class="social-icon"></a>
+    <a href="https://www.instagram.com/"><img src="https://play-lh.googleusercontent.com/VRMWkE5p3CkWhJs6nv-9ZsLAs1QOg5ob1_3qg-rckwYW7yp1fMrYZqnEFpk0IoVP4LM" alt="Instagram" class="social-icon"></a>
+    <a href="https://www.Facebook.com/"><img src="https://img.freepik.com/premium-vector/facebook-logo-vector-facebook-official-logo-vector-facebook-logo-illustrator_1002350-1803.jpg?semt=ais_hybrid&w=740&q=80" alt="GitHub" class="social-icon"></a>
+</div>
+
             </div>
             
             <div class="footer-section">
@@ -283,14 +300,14 @@
                 </ul>
             </div>
             
-            <div class="footer-section">
+            <div  class="footer-section">
                 <h3>Services</h3>
                 <ul class="footer-links">
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Web Design</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> App Development</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Digital Marketing</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> SEO Optimization</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> UI/UX Design</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Ai Analysis</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Nutrition</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Sleep</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Subscription</a></li>
                 </ul>
             </div>
             
@@ -305,13 +322,13 @@
         </div>
         
         <div class="footer-bottom">
-            <p>&copy; 2023 DarkTheme Inc. All rights reserved.</p>
-            <div class="payment-methods">
+            <p>&copy; 2025 HealthVerse Inc. All rights reserved.</p>
+            <!-- <div class="payment-methods">
                 <i class="fab fa-cc-visa"></i>
                 <i class="fab fa-cc-mastercard"></i>
                 <i class="fab fa-cc-paypal"></i>
                 <i class="fab fa-cc-apple-pay"></i>
-            </div>
+            </div> -->
         </div>
     </footer>
 
