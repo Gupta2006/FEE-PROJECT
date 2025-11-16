@@ -7,7 +7,10 @@
     <meta name="description" content="Health Monitoring System - User Dashboard">
     <title>User Dashboard - Health Monitoring System</title>
     <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Global Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -21,18 +24,19 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        /* Layout Structure */
         .wrapper {
             display: flex;
             min-height: 100vh;
         }
-
-        /* Sidebar */
         .sidebar {
             width: 250px;
             background: rgb(34, 34, 34);
             color: white;
+            flex-shrink: 0;
         }
 
+        /* Sidebar Elements */
         .brand {
             padding: 20px;
             background: rgb(34, 34, 34);
@@ -56,7 +60,8 @@
 
         .menu a {
             padding: 12px 20px;
-            display: block;
+            display: flex;
+            align-items: center;
             color: #ddd;
             text-decoration: none;
             transition: all 0.3s;
@@ -76,8 +81,8 @@
             display: inline-block;
             text-align: center;
         }
-
-        /* Main Content */
+        
+        /* Main Content Area */
         .main {
             flex: 1;
             padding: 20px;
@@ -98,35 +103,103 @@
             color: rgb(0, 188, 140);
             font-size: 28px;
         }
-
+        
+        /* User Profile/Header */
         .user {
             display: flex;
             align-items: center;
-            background: rgb(51, 51, 51);
+            background: rgb(26, 26, 26);
             padding: 10px 15px;
             border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 1px solid #2a2a2a;
         }
 
         .avatar {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            margin-right: 12px;
-            border: 2px solid rgb(0, 188, 140);
+            margin-right: 15px;
+            border: 3px solid rgb(0, 188, 140);
             object-fit: cover;
         }
 
         .details h4 {
             margin-bottom: 3px;
-            font-size: 16px;
+            font-size: 18px;
+            color: white;
         }
 
         .details p {
             color: rgb(149, 165, 166);
-            font-size: 13px;
+            font-size: 14px;
+        }
+        
+        /* Trainer Section */
+        .trainer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgb(26, 26, 26);
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
         }
 
-        /* Dashboard Cards */
+        .trainer-selection-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .trainer-selection-box label {
+            font-size: 16px;
+            color: rgb(0, 188, 140);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .trainer-selection-box select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: #1e1e1e;
+            color: #ddd;
+            font-size: 16px;
+            cursor: pointer;
+            flex-grow: 1;
+            max-width: 300px;
+        }
+        #trainerCard {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #1e1e1e;
+            border-left: 5px solid rgb(0, 188, 140);
+        }
+
+        #trainerCard .trainer-details h4 {
+            margin: 0;
+            font-size: 18px;
+            color: white;
+        }
+
+        #trainerCard .trainer-details p {
+            margin: 2px 0;
+            font-size: 14px;
+            color: rgb(149, 165, 166);
+        }
+
+        #trainerCard .trainer-details .motto {
+            font-style: italic;
+            color: rgb(0, 188, 140);
+            margin-top: 5px;
+        }
+        
+        /* Stats Grid */
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -143,11 +216,6 @@
             border: 1px solid #2a2a2a;
             transition: transform 0.3s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
 
         .card::before {
@@ -194,8 +262,8 @@
             color: rgb(149, 165, 166);
             font-size: 14px;
         }
-
-        /* Tables */
+        
+        /* Panels and Tables */
         .panel {
             background: rgb(26, 26, 26);
             border-radius: 8px;
@@ -243,6 +311,7 @@
             background-color: #252525;
         }
 
+        /* Buttons and Badges */
         .btn {
             padding: 8px 15px;
             border: none;
@@ -261,11 +330,6 @@
             background: rgb(0, 163, 121);
         }
 
-        .success {
-            background: rgb(0, 188, 140);
-            color: white;
-        }
-
         .badge {
             padding: 5px 10px;
             border-radius: 20px;
@@ -281,18 +345,13 @@
             background: rgba(243, 156, 18, 0.2);
             color: rgb(243, 156, 18);
         }
-
-        .danger {
-            background: rgba(231, 76, 60, 0.2);
-            color: rgb(231, 76, 60);
-        }
-
-        /* Charts */
-        .charts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        
+        /* Charts & Progress */
+        .charts-container-inline {
+            display: flex;
             gap: 20px;
-            margin-bottom: 30px;
+            flex-wrap: wrap; 
+            flex-grow: 1;
         }
 
         .chart {
@@ -300,9 +359,12 @@
             border-radius: 8px;
             padding: 20px;
             border: 1px solid #2a2a2a;
+            max-width: 400px; 
+            margin: 0; 
+            height: 400px; 
         }
 
-        .placeholder {
+        .chart-container {
             height: 300px;
             background: #1e1e1e;
             display: flex;
@@ -312,9 +374,9 @@
             color: rgb(149, 165, 166);
             font-style: italic;
             border: 1px dashed #333;
+            position: relative;
         }
-
-        /* Progress bar */
+        
         .progress-container {
             width: 100%;
             background-color: #333;
@@ -331,72 +393,60 @@
             color: white;
             font-size: 12px;
         }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .charts {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .wrapper {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .user {
-                margin-top: 15px;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main {
-                padding: 15px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .value {
-                font-size: 24px;
-            }
-        }
-
-        .hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        .time-based {
+        
+        /* General Content Layouts */
+        .content-container {
             display: none;
+            padding: 20px 0;
+        }
+        
+        #settingsContent {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        #dashboardContent, #mealTrackerContent, #mealPlansContent, #bmiContent, #subscriptionContent {
+            padding: 0; /* Align with header */
+        }
+        
+        #progressTrackingContent {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+        
+        /* Progress Tracking Specifics */
+        .progress-header-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            margin-top: 20px; 
         }
 
+        .progress-text {
+            flex-shrink: 0;
+            width: 300px;
+        }
 
+        .progress-text h1 {
+            color: rgb(0, 188, 140);
+            font-size: 36px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            border: none;
+            padding-bottom: 0;
+        }
+        
+        .progress-text p {
+            color: rgb(149, 165, 166);
+            font-size: 18px;
+            max-width: 250px;
+        }
+        
+        /* Dashboard Button Style */
         .b {
             background-color: rgb(0, 188, 140);
-            /* Dark green */
             color: white;
             padding: 10px 20px;
             padding-left: 3rem;
@@ -409,10 +459,303 @@
             margin-top: 4.5rem;
         }
 
-        .b:hover {
-            background-color: #004d00;
-            /* Even darker green on hover */
+        /* Message Box */
+        .message-box {
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            opacity: 1;
         }
+        .message-success {
+            background-color: rgba(0, 188, 140, 0.4);
+            color: #fff;
+            border: 1px solid rgb(0, 188, 140);
+        }
+        .message-info {
+            background-color: rgba(52, 152, 219, 0.4);
+            color: #fff;
+            border: 1px solid rgb(52, 152, 219);
+        }
+        
+        /* Slider Styles */
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: rgb(149, 165, 166);
+            font-size: 14px;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #333;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgb(0, 188, 140);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .slider-value {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: rgb(0, 188, 140);
+        }
+        
+        .slider-card {
+            background: rgb(26, 26, 26);
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Settings Styles */
+        .user-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .user-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgb(0, 188, 140);
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            margin-bottom: 15px;
+        }
+
+        .user-info h4 {
+            font-size: 20px;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .user-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 10px;
+            background: #1e1e1e;
+            border-radius: 6px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: rgb(149, 165, 166);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .settings-card {
+            background: rgb(26, 26, 26);
+            border-radius: 8px;
+            padding: 25px;
+            border: 1px solid #2a2a2a;
+        }
+        
+        .settings-card h3 {
+            color: rgb(0, 188, 140);
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: #1e1e1e;
+            color: #ddd;
+            font-size: 16px;
+        }
+        
+        .client-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .client-list li {
+            padding: 12px 15px;
+            border-bottom: 1px solid #333;
+            color: #ddd;
+        }
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        /* Chat Styles */
+        #chatContent {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            height: 80vh; 
+            background: rgb(26, 26, 26);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+        }
+
+        #chatMessages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #1e1e1e;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .sent {
+            align-self: flex-end;
+            background-color: rgb(0, 188, 140);
+            color: #121212;
+            border-bottom-right-radius: 2px;
+        }
+
+        .received {
+            align-self: flex-start;
+            background-color: #343434;
+            color: white;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background: rgb(34, 34, 34);
+            border-top: 1px solid #333;
+        }
+
+        .chat-input input[type="text"] {
+            flex-grow: 1;
+            border: none;
+            padding: 12px;
+            border-radius: 20px;
+            background: #1e1e1e;
+            color: white;
+            margin-right: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: rgb(0, 188, 140);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        
+        /* Custom BMI Calculator Styles (Adapted from bmi.html) */
+        #bmiContent th {
+            background-color: rgb(0, 188, 140);
+            color: #121212;
+            font-weight: 700;
+        }
+        
+        #bmiContent td {
+            border: 1px solid #333;
+            color: #ddd;
+        }
+        
+        #bmiContent tr:nth-child(even) {
+            background-color: #2a2a2a;
+        }
+        
+        /* BMI Status Colors (using theme-friendly colors) */
+        .status {
+             font-weight: bold;
+             padding: 5px 10px;
+             border-radius: 4px;
+             display: inline-block;
+        }
+        .under { 
+            color: #f1c40f; 
+            background: rgba(241, 196, 15, 0.2); 
+        } 
+        .normal { 
+            color: #00bc8c; 
+            background: rgba(0, 188, 140, 0.2); 
+        } 
+        .over { 
+            color: #e67e22; 
+            background: rgba(230, 126, 34, 0.2);
+        } 
+        .obese { 
+            color: #e74c3c; 
+            background: rgba(231, 76, 60, 0.2);
+        }
+        
     </style>
 </head>
 
@@ -420,236 +763,984 @@
     <div class="wrapper">
         <aside class="sidebar">
             <div class="brand">
-                <div style="font-size:30px;">❤️</div>
+                <div style="font-size:30px; color: rgb(0, 188, 140);">🏥</div>
                 <h2>Health Tracker</h2>
             </div>
             <nav class="menu" aria-label="Main navigation">
                 <ul>
-                    <li><a href="#" class="active"><span class="icon">🏠</span> Dashboard</a></li>
-                    <li><a href="#"><span class="icon">📋</span> My Profile</a></li>
-                    <li><a href="#"><span class="icon">🍽️</span> Meal Plans</a></li>
-                    <li><a href="#"><span class="icon">🏋️</span> Workout Plans</a></li>
-                    <li><a href="#"><span class="icon">📊</span> Progress Tracking</a></li>
-                    <li><a href="index.html"><span class="icon">🚪</span> Logout</a></li>
+                    <li id="dashboard-link"><a href="#" class="active" data-page="dashboard"><span class="icon">🏠</span> Dashboard</a></li>
+                    <li id="chat-link"><a href="#" data-page="chat"><span class="icon">💬</span> Message Trainer</a></li>
+                    <li id="bmi-link"><a href="#" data-page="bmi"><span class="icon">📏</span> BMI Calculator</a></li>
+                    <!-- ADDED SUBSCRIPTION LINK -->
+                    <li id="subscription-link"><a href="#" data-page="subscription"><span class="icon">⭐</span> Subscription</a></li>
+                    <li id="mealplans-link"><a href="#" data-page="mealplans"><span class="icon">🍽️</span> Meal Plans</a></li>
+                    <li id="progresstracking-link"><a href="#" data-page="progresstracking"><span class="icon">📊</span> Progress Tracking</a></li>
+                    <li id="mealtracker-link"><a href="#" data-page="mealtracker"><span class="icon">📝</span> Meal Tracker</a></li>
+                    <li id="settings-link"><a href="#" data-page="settings"><span class="icon">⚙️</span> Settings</a></li>
                 </ul>
             </nav>
         </aside>
 
         <main class="main">
-            <header class="header">
-                <div>
-                    <h1>User Dashboard</h1>
-                    <p id="greeting">Welcome back! Here's your health summary.</p>
-                </div>
-                <div class="user">
-                    <img class="avatar"
-                        src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
-                        alt="User Photo">
-                    <div class="details">
-                        <h4>Parampreet Singh</h4>
-                        <p>Member since: Sept 2025</p>
-                    </div>
-                </div>
-            </header>
+            <!-- Status Message Box (Replaces Alert/Confirm) -->
+            <div id="statusMessage" class="message-box" style="display:none; margin-bottom: 20px;"></div>
 
-            <section aria-labelledby="dashboard-cards-heading">
-                <h2 id="dashboard-cards-heading" class="hidden">Dashboard Statistics</h2>
-                <div class="stats">
-                    <div class="card">
-                        <div class="top">
-                            <h3 class="title">Current Weight</h3>
-                            <div class="icon">⚖️</div>
-                        </div>
-                        <div class="value">78.5 kg</div>
-                        <p class="desc">Goal: 75 kg (4.7% to go)</p>
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: 85.3%">85.3%</div>
+            <!-- DASHBOARD CONTENT -->
+            <div id="dashboardContent" class="content-container" style="display: block;">
+                <header class="header">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p id="greeting">Welcome back! Here's your health summary.</p>
+                    </div>
+                    <div class="user">
+                        <img class="avatar"
+                            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?fit=crop&w=500&q=80"
+                            alt="User Photo">
+                        <div class="details">
+                            <h4 id="userNameHeader">Parampreet Singh</h4>
+                            <p id="memberSinceHeader">Member since: Sept 2025</p>
                         </div>
                     </div>
-
-                    <div class="card">
-
-
-                        <div class="top">
-                            <h3 class="title">BMI</h3>
-                            <div class="icon">📈</div>
-                        </div>
-                        <!-- <div class="value">24.2</div> -->
-                         
-                        <a href="bmi.html">
-                            <button class="b">Calculate Now!</button>
-
-                            <!-- <p class="desc"></p> -->
-                        </a>
+                </header>
+                
+                <section class="trainer-section">
+                    <div class="trainer-selection-box">
+                        <label for="trainer-select">Select Your Trainer:</label>
+                        <select id="trainer-select" aria-label="Select your personal trainer">
+                            <option value="101" selected>Naman</option>
+                            <option value="102">Kartik</option>
+                            <option value="103">Ansh</option>
+                        </select>
                     </div>
-
-                    <div class="card">
-                        <div class="top">
-                            <h3 class="title">Workout Completion</h3>
-                            <div class="icon">✅</div>
-                        </div>
-                        <div class="value">87%</div>
-                        <p class="desc">Completed 20 of 23 workouts</p>
+                    <div id="trainerCard">
+                        <!-- Trainer details populated by JS -->
                     </div>
-
-                    <div class="card">
-                        <div class="top">
-                            <h3 class="title">Days Streak</h3>
-                            <div class="icon">🔥</div>
+                </section>
+                
+                <section aria-labelledby="dashboard-cards-heading">
+                    <h2 id="dashboard-cards-heading" style="display: none;">Dashboard Statistics</h2>
+                    <div class="stats">
+                        <div class="card">
+                            <div class="top">
+                                <h3 class="title">Current Weight</h3>
+                                <div class="icon">⚖️</div>
+                            </div>
+                            <div class="value">78.5 kg</div>
+                            <p class="desc" id="weightGoalText">Goal: 75 kg (3.5 kg to go)</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="weightProgressBar" style="width: 18.9%">18.9%</div>
+                            </div>
                         </div>
-                        <div class="value">12</div>
-                        <p class="desc">Consistent for 12 days</p>
+
+                        <div class="card">
+                            <div class="top">
+                                <h3 class="title">BMI</h3>
+                                <div class="icon">📈</div>
+                            </div>
+                            <div class="value">24.2</div>
+                            <!-- Updated button to use JS navigation function -->
+                            <button class="b" onclick="showPage('bmi')">Calculate Now!</button>
+                        </div>
+
+                        <div class="slider-card">
+                            <div class="top">
+                                <h3 class="title">Weight Goal</h3>
+                                <div class="icon">🎯</div>
+                            </div>
+                            <div class="slider-container">
+                                <div class="slider-labels">
+                                    <span>60 kg</span>
+                                    <span>Current: 78.5 kg</span>
+                                    <span>100 kg</span>
+                                </div>
+                                <input type="range" min="60" max="100" value="75" class="slider" id="weightGoalSlider">
+                                <div class="slider-value" id="sliderValue">75 kg</div>
+                            </div>
+                            <p class="desc">Adjust your weight goal using the slider above</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="top">
+                                <h3 class="title">Workout Completion</h3>
+                                <div class="icon">✅</div>
+                            </div>
+                            <div class="value">87%</div>
+                            <p class="desc">Completed 20 of 23 workouts</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="top">
+                                <h3 class="title">Days Streak</h3>
+                                <div class="icon">🔥</div>
+                            </div>
+                            <div class="value">12</div>
+                            <p class="desc">Consistent for 12 days</p>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
 
-            <section class="panel" aria-labelledby="todays-plan-heading">
-                <div class="topbar">
-                    <h3 class="heading" id="todays-plan-heading">Today's Plan</h3>
-                    <button class="btn primary" id="viewScheduleBtn">View Full Schedule</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Activity</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="schedule-body">
-                        <tr>
-                            <td>8:00 AM</td>
-                            <td>Breakfast: High-protein meal</td>
-                            <td>Nutrition</td>
-                            <td><span class="badge good">Completed</span></td>
-                            <td>
-                                <button class="btn primary">Details</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>10:00 AM</td>
-                            <td>Cardio: Running 5km</td>
-                            <td>Workout</td>
-                            <td><span class="badge warning">Pending</span></td>
-                            <td>
-                                <button class="btn primary start-activity">Start</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>1:00 PM</td>
-                            <td>Lunch: Lean protein & veggies</td>
-                            <td>Nutrition</td>
-                            <td><span class="badge warning">Pending</span></td>
-                            <td>
-                                <button class="btn primary">Details</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>6:00 PM</td>
-                            <td>Strength Training: Upper body</td>
-                            <td>Workout</td>
-                            <td><span class="badge warning">Pending</span></td>
-                            <td>
-                                <button class="btn primary start-activity">Start</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>8:00 PM</td>
-                            <td>Dinner: Light meal</td>
-                            <td>Nutrition</td>
-                            <td><span class="badge warning">Pending</span></td>
-                            <td>
-                                <button class="btn primary">Details</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <section class="charts" aria-labelledby="charts-heading">
-                <h2 id="charts-heading" class="hidden">Progress Charts</h2>
-                <div class="chart">
+            <!-- BMI CALCULATOR CONTENT (MERGED FROM bmi.html) -->
+            <div id="bmiContent" class="content-container">
+                <header class="header">
+                    <div>
+                        <h1>Body Mass Index (BMI) Calculator</h1>
+                        <p>Calculate your BMI to assess your current health status.</p>
+                    </div>
+                </header>
+                <section class="panel" aria-labelledby="bmi-calc-heading">
                     <div class="topbar">
-                        <h3 class="heading">Weight Progress</h3>
-                        <button class="btn primary" id="weightChartBtn">Load Chart</button>
+                        <h3 class="heading" id="bmi-calc-heading" style="color: white; border-bottom: none;">BMI Calculation</h3>
                     </div>
-                    <div class="placeholder" id="weightChart">
-                        <p>Weight chart visualization would be displayed here</p>
+                    <table id="bmiTable" style="margin-bottom: 30px;">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Weight (kg)</th>
+                                <th>Height (cm)</th>
+                                <th>BMI</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" id="calcName" class="form-control" placeholder="Your Name" value="Parampreet Singh"></td>
+                                <td><input type="number" id="calcWeight" class="form-control" placeholder="kg" value="78.5"></td>
+                                <td><input type="number" id="calcHeight" class="form-control" placeholder="cm" value="180"></td>
+                                <td class="bmi" id="resultBMI">-</td>
+                                <td class="status" id="resultStatus">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Button links to JS function -->
+                    <button class="btn primary" onclick="handleCalculateBMI()">Calculate BMI</button>
+                </section>
+                <section class="panel" style="border-left: 5px solid #00bc8c;">
+                    <h3 class="heading" style="color: white; margin-bottom: 10px;">BMI Categories</h3>
+                    <p style="color: #ccc;">
+                        <span class="status under">Underweight:</span> Below 18.5 | 
+                        <span class="status normal">Normal:</span> 18.5 – 24.9 | 
+                        <span class="status over">Overweight:</span> 25.0 – 29.9 | 
+                        <span class="status obese">Obese:</span> 30.0 and Above
+                    </p>
+                </section>
+            </div>
+            
+            <!-- SUBSCRIPTION CONTENT (New Page) -->
+            <div id="subscriptionContent" class="content-container">
+                <header class="header">
+                    <div>
+                        <h1>Manage Subscription</h1>
+                        <p>Upgrade your plan and view billing history.</p>
+                    </div>
+                </header>
+                <section class="panel" style="text-align: center; padding: 50px;">
+                    <h3 class="heading" style="color: white;">Subscription Management Coming Soon!</h3>
+                    <p style="color:rgb(149, 165, 166); margin-top: 15px;">Check back here soon to manage your premium features and billing details.</p>
+                    <div style="font-size: 60px; margin-top: 30px; color: #f1c40f;">🏆</div>
+                </section>
+            </div>
+            
+            <!-- CHAT CONTENT -->
+            <div id="chatContent" class="content-container">
+                <header class="header">
+                    <div>
+                        <h1>Trainer Chat</h1>
+                        <p id="chatTrainerInfo">Messaging with Naman (Weight Loss & Cardio)</p>
+                    </div>
+                </header>
+                <div id="chatMessages">
+                    <div class="chat-bubble received">
+                        Hey Parampreet! I saw your workout log for yesterday. Great consistency! How's the new meal plan treating you?
+                    </div>
+                    <div class="chat-bubble sent">
+                        Hi Naman! The workout was tough but good. The meal plan is fine, but I'm struggling a bit with the high protein breakfast. Any alternatives?
+                    </div>
+                    <div class="chat-bubble received">
+                        Absolutely! We can swap the shake for scrambled egg whites and some nuts. I'll update your plan. You're doing great, keep it up!
                     </div>
                 </div>
-                <div class="chart">
-                    <div class="topbar">
-                        <h3 class="heading">Workout Consistency</h3>
-                        <button class="btn primary" id="workoutChartBtn">Load Chart</button>
-                    </div>
-                    <div class="placeholder" id="workoutChart">
-                        <p>Workout consistency chart would be displayed here</p>
-                    </div>
+                <div class="chat-input">
+                    <!-- The placeholder is hardcoded here and will be updated via JS -->
+                    <input type="text" id="messageInput" placeholder="Type your message to Naman..." onkeydown="if(event.key === 'Enter') { sendMessage(); }">
+                    <button onclick="sendMessage()">➤</button>
                 </div>
-            </section>
+            </div>
 
-            <section class="panel" aria-labelledby="recent-meals-heading">
-                <div class="topbar">
-                    <h3 class="heading" id="recent-meals-heading">Recent Meals</h3>
-                    <button class="btn primary" id="viewAllMealsBtn">View All</button>
+            <!-- MEAL PLANS CONTENT -->
+            <div id="mealPlansContent" class="content-container">
+                 <header class="header">
+                    <div><h1>Meal Plans & Today's Schedule</h1><p>Your guide to optimal nutrition and daily activity.</p></div>
+                </header>
+                <section class="panel" aria-labelledby="todays-plan-heading">
+                    <div class="topbar">
+                        <h3 class="heading" id="todays-plan-heading">Today's Schedule</h3>
+                        <button class="btn primary" id="viewScheduleBtn">View Full Schedule</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Activity</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-body">
+                            <!-- Schedule rows populated by JS -->
+                        </tbody>
+                    </table>
+                </section>
+                <section class="panel" aria-labelledby="upcoming-meals-heading">
+                     <div class="topbar">
+                        <h3 class="heading" id="upcoming-meals-heading">Upcoming Meal Prep</h3>
+                        <button class="btn primary" id="viewRecipesBtn">View Recipes</button>
+                    </div>
+                    <p style="color:rgb(149, 165, 166);">Next 3 days are focused on High Protein, Low Carb meals to support your goal.</p>
+                    <ul style="list-style: disc; padding-left: 20px; margin-top: 15px;">
+                        <li>Breakfast: High-protein Greek Yogurt Bowl</li>
+                        <li>Lunch: Tuna Melt on Whole Wheat Bread</li>
+                        <li>Dinner: Chicken Breast with Steamed Asparagus</li>
+                    </ul>
+                </section>
+            </div>
+
+            <!-- PROGRESS TRACKING CONTENT -->
+            <div id="progressTrackingContent" class="content-container">
+                <div class="progress-header-row">
+                    <div class="progress-text">
+                        <h1>Progress Tracking</h1>
+                        <p>Visualizing your fitness journey's key metrics.</p>
+                    </div>
+                    <div class="charts-container-inline">
+                        <div class="chart">
+                            <div class="topbar">
+                                <h3 class="heading">Weight Progress</h3>
+                                <button class="btn primary" id="weightChartBtn">Load Chart</button>
+                            </div>
+                            <div class="chart-container" id="weightChart">
+                                <p>Click "Load Chart" to visualize your weight progress</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chart">
+                            <div class="topbar">
+                                <h3 class="heading">Workout Consistency</h3>
+                                <button class="btn primary" id="workoutChartBtn">Load Chart</button>
+                            </div>
+                            <div class="chart-container" id="workoutChart">
+                                <p>Click "Load Chart" to visualize your workout consistency</p>
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Breakfast</th>
-                            <th>Lunch</th>
-                            <th>Dinner</th>
-                            <th>Calories</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="meals-body">
-                        <tr>
-                            <td>2023-10-15</td>
-                            <td>Oatmeal with berries</td>
-                            <td>Grilled chicken salad</td>
-                            <td>Salmon with vegetables</td>
-                            <td>1850</td>
-                            <td><span class="badge good">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>2023-10-14</td>
-                            <td>Protein smoothie</td>
-                            <td>Turkey wrap</td>
-                            <td>Lean beef stir-fry</td>
-                            <td>1920</td>
-                            <td><span class="badge good">Completed</span></td>
-                        </tr>
-                        <tr>
-                            <td>2023-10-13</td>
-                            <td>Egg whites & toast</td>
-                            <td>Tuna salad</td>
-                            <td>Baked chicken</td>
-                            <td>1750</td>
-                            <td><span class="badge good">Completed</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
+            </div>
+
+            <!-- MEAL TRACKER CONTENT -->
+            <div id="mealTrackerContent" class="content-container">
+                 <header class="header">
+                    <div><h1>Meal Tracker</h1><p>Review and analyze your recent meal logs.</p></div>
+                </header>
+                 <section class="panel" aria-labelledby="recent-meals-heading">
+                    <div class="topbar">
+                        <h3 class="heading" id="recent-meals-heading">Recent Meals</h3>
+                        <button class="btn primary" id="viewAllMealsBtn">View All</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Breakfast</th>
+                                <th>Lunch</th>
+                                <th>Dinner</th>
+                                <th>Calories</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meals-body">
+                            <!-- Meal rows populated by JS -->
+                        </tbody>
+                    </table>
+                </section>
+                <section class="panel" aria-labelledby="calorie-summary-heading">
+                     <div class="topbar">
+                        <h3 class="heading" id="calorie-summary-heading">Calorie Summary</h3>
+                    </div>
+                    <p style="color:rgb(149, 165, 166);">Average daily intake over the last 3 days: <strong>1840 kcal</strong>.</p>
+                    <p style="color:rgb(149, 165, 166); margin-top: 10px;">Target daily intake: <strong>1850 kcal</strong>.</p>
+                </section>
+            </div>
+            
+            <!-- SETTINGS CONTENT -->
+            <div id="settingsContent" class="content-container">
+                <div class="settings-card">
+                    <h3>User Profile & Security</h3>
+                    <div class="user-stats">
+                        <img class="user-avatar-large"
+                            src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
+                            alt="User Photo">
+                        <div class="user-info">
+                            <h4 id="userNameSettingsCard">Parampreet Singh</h4>
+                            <p id="memberSinceSettingsCard">Member since: Sept 2025</p>
+                        </div>
+                        <div class="user-details">
+                            <div class="detail-item">
+                                <div class="detail-label">AGE</div>
+                                <div class="detail-value">28</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">GENDER</div>
+                                <div class="detail-value">Male</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">BMI</div>
+                                <div class="detail-value">24.2</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">JOINED</div>
+                                <div class="detail-value">2023-09-15</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>My Trainers</h3>
+                    <ul class="client-list">
+                        <li>Naman - Weight Loss</li>
+                        <li>Kartik - Strength</li>
+                        <li>Ansh - Yoga</li>
+                    </ul>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Account Settings</h3>
+                    <div class="form-group">
+                        <label for="userName">Full Name</label>
+                        <input type="text" id="userName" class="form-control" value="Parampreet Singh">
+                    </div>
+                    <div class="form-group">
+                        <label for="userEmail">Email</label>
+                        <input type="email" id="userEmail" class="form-control" value="param.singh@health.com">
+                    </div>
+                    <button class="btn primary" id="updateInfoBtn">Update Info</button>
+                    <button class="btn primary" style="margin-top: 10px; background: #3498db;" id="changePasswordBtn">Change Password</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Health Goals</h3>
+                    <div style="text-align: center; padding: 20px 0;">
+                        <div style="font-size: 48px; color: rgb(0, 188, 140); font-weight: bold;">3</div>
+                        <div style="color: #ddd; font-size: 18px;">Active Goals</div>
+                        <div style="color: rgb(0, 188, 140); margin-top: 10px;">+1 goal completed this month</div>
+                    </div>
+                    <ul class="client-list" style="margin-top: 15px;">
+                        <li>🏋️ Lose 5kg (78.5kg → 75kg)</li>
+                        <li>💪 Build Muscle Mass</li>
+                        <li>🏃‍♂️ Run 5km in 25 mins</li>
+                    </ul>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Notification Preferences</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="workoutReminders" checked>
+                        <label for="workoutReminders">Workout reminders 1 hour before session</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="mealReminders" checked>
+                        <label for="mealReminders">Meal plan reminders</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="progressReports">
+                        <label for="progressReports">Weekly progress report email</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="trainerMessages" checked>
+                        <label for="trainerMessages">Messages from trainer</label>
+                    </div>
+                    <button class="btn primary" id="saveNotificationsBtn">Save Preferences</button>
+                </div>
+
+                <div class="settings-card" style="grid-column: 1 / -1;">
+                    <button class="logout-btn" id="logoutBtn">Log Out of Health Tracker</button>
+                </div>
+            </div>
         </main>
     </div>
 
-
-
-
-
-
-
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM References
+            const mainContentAreas = {
+                dashboard: document.getElementById('dashboardContent'),
+                chat: document.getElementById('chatContent'), 
+                bmi: document.getElementById('bmiContent'), // New BMI content area
+                subscription: document.getElementById('subscriptionContent'), // ADDED SUBSCRIPTION CONTENT AREA
+                mealplans: document.getElementById('mealPlansContent'),
+                progresstracking: document.getElementById('progressTrackingContent'),
+                mealtracker: document.getElementById('mealTrackerContent'),
+                settings: document.getElementById('settingsContent')
+            };
+            const menuLinks = document.querySelectorAll('.menu a');
+
+            const scheduleBody = document.getElementById('schedule-body');
+            const viewScheduleBtn = document.getElementById('viewScheduleBtn');
+            const mealsBody = document.getElementById('meals-body');
+            const viewAllMealsBtn = document.getElementById('viewAllMealsBtn');
+            const statusMessage = document.getElementById('statusMessage');
+            const trainerSelect = document.getElementById('trainer-select');
+            const trainerCard = document.getElementById('trainerCard');
+            const weightGoalSlider = document.getElementById('weightGoalSlider');
+            const sliderValue = document.getElementById('sliderValue');
+            const weightProgressBar = document.getElementById('weightProgressBar');
+            const weightGoalText = document.getElementById('weightGoalText');
+            const weightChartContainer = document.getElementById('weightChart');
+            const workoutChartContainer = document.getElementById('workoutChart');
+            const weightChartBtn = document.getElementById('weightChartBtn');
+            const workoutChartBtn = document.getElementById('workoutChartBtn');
+            const updateInfoBtn = document.getElementById('updateInfoBtn');
+            const changePasswordBtn = document.getElementById('changePasswordBtn');
+            const saveNotificationsBtn = document.getElementById('saveNotificationsBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const viewRecipesBtn = document.getElementById('viewRecipesBtn');
+            const chatMessagesContainer = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+            const chatTrainerInfo = document.getElementById('chatTrainerInfo');
+            
+            // BMI Calculator DOM elements
+            const calcWeight = document.getElementById('calcWeight');
+            const calcHeight = document.getElementById('calcHeight');
+            const resultBMI = document.getElementById('resultBMI');
+            const resultStatus = document.getElementById('resultStatus');
+
+            // NEW DOM REFERENCES for user name display
+            const userNameHeader = document.getElementById('userNameHeader');
+            const memberSinceHeader = document.getElementById('memberSinceHeader');
+            const userNameSettingsCard = document.getElementById('userNameSettingsCard');
+            const memberSinceSettingsCard = document.getElementById('memberSinceSettingsCard');
+            const userNameInput = document.getElementById('userName');
 
 
+            // Constants and Data
+            let CURRENT_USER_NAME = "Parampreet Singh";
+            let CURRENT_MEMBER_SINCE = "Sept 2025";
+            const CURRENT_WEIGHT = 78.5;
+            const trainers = [
+                { id: 101, name: "Naman", focus: "Weight Loss & Cardio", motto: "Consistency breeds transformation.", color: "#00bc8c" },
+                { id: 102, name: "Kartik", focus: "Powerlifting & Hypertrophy", motto: "Strength is not a goal, but a prerequisite.", color: "#3498db" },
+                { id: 103, name: "Ansh", focus: "Yoga & Mobility", motto: "Move well, live well.", color: "#f39c12" }
+            ];
+            let selectedTrainerId = trainers[0].id; 
+
+            const scheduleMap = {
+                101: [ 
+                    { id: 1, time: "7:00 AM", activity: "Morning Run (5km)", type: "Workout", status: "Pending" },
+                    { id: 2, time: "8:30 AM", activity: "Breakfast: Oats & Protein Shake", type: "Nutrition", status: "Pending" },
+                    { id: 3, time: "11:00 AM", activity: "Walk/Active Recovery", type: "Routine", status: "Pending" },
+                    { id: 4, time: "1:00 PM", activity: "Lunch: Lean Chicken Salad", type: "Nutrition", status: "Pending" },
+                    { id: 5, time: "4:00 PM", activity: "HIIT Session (30 min)", type: "Workout", status: "Pending" },
+                    { id: 6, time: "8:00 PM", activity: "Dinner: Steamed Fish & Veggies", type: "Nutrition", status: "Pending" },
+                    { id: 7, time: "10:00 PM", activity: "Hydrate (Log final glass)", type: "Routine", status: "Pending" },
+                ],
+                102: [ /* Data for Kartik */ ],
+                103: [ /* Data for Ansh */ ]
+            };
+
+            const fullMealsData = [
+                { date: "2023-10-15", breakfast: "Oatmeal with berries", lunch: "Grilled chicken salad", dinner: "Salmon with vegetables", calories: 1850, status: "Completed", badgeClass: "good" },
+                { date: "2023-10-14", breakfast: "Protein smoothie", lunch: "Turkey wrap", dinner: "Lean beef stir-fry", calories: 1920, status: "Completed", badgeClass: "good" },
+                { date: "2023-10-13", breakfast: "Egg whites & toast", lunch: "Tuna salad", dinner: "Baked chicken", calories: 1750, status: "Completed", badgeClass: "good" },
+                { date: "2023-10-12", breakfast: "Scrambled Eggs", lunch: "Pasta Salad", dinner: "Tacos", calories: 1950, status: "Completed", badgeClass: "good" },
+                { date: "2023-10-11", breakfast: "Yogurt Parfait", lunch: "Lentil Soup", dinner: "Chicken Curry", calories: 2000, status: "Off Track", badgeClass: "warning" },
+            ];
+            let isMealsExpanded = false;
+            let isScheduleExpanded = false;
+            let weightChartInstance = null;
+            let workoutChartInstance = null;
+            const recipes = {
+                'greek-yogurt-bowl': {
+                    title: "High-Protein Greek Yogurt Bowl",
+                    ingredients: ["1 cup Greek Yogurt", "1 scoop Vanilla Protein Powder", "1/2 cup Mixed Berries", "1 tbsp Chia Seeds"],
+                    macros: "350 kcal | P: 45g | C: 20g | F: 10g"
+                },
+                'tuna-melt': {
+                    title: "Tuna Melt on Whole Wheat",
+                    ingredients: ["1 can Tuna (drained)", "1 tbsp Light Mayo", "2 slices Whole Wheat Bread", "1 slice Low-fat Cheese"],
+                    macros: "400 kcal | P: 30g | C: 35g | F: 15g"
+                },
+                'chicken-asparagus': {
+                    title: "Chicken Breast w/ Steamed Asparagus",
+                    ingredients: ["5oz Grilled Chicken Breast", "1 cup Asparagus", "1 tbsp Olive Oil", "Salt, Pepper, Garlic Powder"],
+                    macros: "450 kcal | P: 50g | C: 10g | F: 20g"
+                }
+            };
+            let chatHistory = {
+                101: [
+                    { sender: 'trainer', message: "Hey Parampreet! I saw your workout log for yesterday. Great consistency! How's the new meal plan treating you?" },
+                    { sender: 'client', message: "Hi Naman! The workout was tough but good. The meal plan is fine, but I'm struggling a bit with the high protein breakfast. Any alternatives?" },
+                    { sender: 'trainer', message: "Absolutely! We can swap the shake for scrambled egg whites and some nuts. I'll update your plan. You're doing great, keep it up!" },
+                ]
+            };
+            
+            // Utility function to display non-blocking messages (replaces alert/confirm)
+            function showMessage(message, type = 'info') {
+                statusMessage.innerHTML = message;
+                statusMessage.className = `message-box message-${type}`;
+                statusMessage.style.display = 'block';
+                clearTimeout(statusMessage.timer);
+                statusMessage.timer = setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 10000);
+            }
+
+            function getBadgeClass(status) {
+                if (status === 'Completed') return 'good';
+                if (status === 'Pending') return 'warning';
+                if (status === 'Off Track') return 'warning'; // Using warning for 'Off Track' since danger class isn't defined
+                return 'warning';
+            }
+            
+            function getButtonLabel(status, type) {
+                if (status === 'Completed') {
+                    return 'Details';
+                }
+                if (type === 'Nutrition' || type === 'Routine') {
+                    return 'Log';
+                }
+                if (type === 'Workout') {
+                    return 'Start';
+                }
+                return 'Action';
+            }
+            
+            // Core Navigation Function
+            function showPage(page) {
+                Object.values(mainContentAreas).forEach(content => {
+                    if (content) {
+                        content.style.display = 'none';
+                    }
+                });
+                const selectedContent = mainContentAreas[page];
+                if (selectedContent) {
+                    if (page === 'settings') {
+                         selectedContent.style.display = 'grid';
+                    } else if (page === 'progresstracking' || page === 'chat') {
+                        selectedContent.style.display = 'flex';
+                        if (page === 'chat') renderChat();
+                    } else {
+                         selectedContent.style.display = 'block';
+                    }
+                } else {
+                    // Handle pages with no specific content div yet (like 'subscription')
+                    if (page === 'subscription') {
+                        document.getElementById('subscriptionContent').style.display = 'block';
+                    } else {
+                        showMessage(`Page "${page}" content is missing or misconfigured.`, 'danger');
+                        return;
+                    }
+                }
+                
+                menuLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('data-page') === page) {
+                        link.classList.add('active');
+                    }
+                });
+                if (page === 'mealplans' || page === 'dashboard') {
+                    refreshDashboard(); 
+                }
+                if (page === 'mealtracker') {
+                    renderMeals();
+                }
+            }
+            window.showPage = showPage; // Expose globally for HTML onclick
+
+            // Trainer Management
+            function renderTrainerSelection() {
+                trainerSelect.innerHTML = trainers.map(t =>
+                    `<option value="${t.id}" ${t.id === selectedTrainerId ? 'selected' : ''}>${t.name}</option>`
+                ).join('');
+                const initialTrainer = trainers.find(t => t.id === selectedTrainerId);
+                renderTrainerCard(initialTrainer);
+            }
+
+            function renderTrainerCard(trainer) {
+                trainerCard.innerHTML = `
+                    <div style="width: 70px; height: 70px; border-radius: 50%; background: ${trainer.color}; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; color: white;">${trainer.name.charAt(0)}</div>
+                    <div class="trainer-details">
+                        <h4>${trainer.name}</h4>
+                        <p>Focus: ${trainer.focus}</p>
+                        <p class="motto">"${trainer.motto}"</p>
+                    </div>
+                `;
+            }
+            
+            // Meal Plan/Schedule Rendering
+            function renderSchedule() {
+                const schedule = scheduleMap[selectedTrainerId] || [];
+                const dataToRender = isScheduleExpanded ? schedule : schedule.slice(0, 5);
+                scheduleBody.innerHTML = ''; 
+
+                dataToRender.forEach(item => {
+                    const buttonLabel = getButtonLabel(item.status, item.type);
+                    const badgeClass = getBadgeClass(item.status);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.time}</td>
+                        <td>${item.activity}</td>
+                        <td>${item.type}</td>
+                        <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                        <td>
+                            <button class="btn primary" data-id="${item.id}" data-action="${buttonLabel.toLowerCase()}" data-trainer-id="${selectedTrainerId}">
+                                ${buttonLabel}
+                            </button>
+                        </td>
+                    `;
+                    scheduleBody.appendChild(row);
+                });
+                viewScheduleBtn.textContent = isScheduleExpanded ? 'Hide Details' : 'View Full Schedule';
+            }
+
+            // Meal Tracker Rendering
+            function renderMeals() {
+                const dataToRender = isMealsExpanded ? fullMealsData : fullMealsData.slice(0, 3);
+                mealsBody.innerHTML = '';
+
+                dataToRender.forEach(item => {
+                    const badgeClass = getBadgeClass(item.status);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.date}</td>
+                        <td>${item.breakfast}</td>
+                        <td>${item.lunch}</td>
+                        <td>${item.dinner}</td>
+                        <td>${item.calories}</td>
+                        <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                    `;
+                    mealsBody.appendChild(row);
+                });
+                viewAllMealsBtn.textContent = isMealsExpanded ? 'View Less' : 'View All';
+            }
+            
+            // Dashboard Update
+            function refreshDashboard() {
+                const trainer = trainers.find(t => t.id === selectedTrainerId);
+                renderTrainerCard(trainer);
+                renderSchedule();
+                updateSliderValue();
+                chatTrainerInfo.textContent = `Messaging with ${trainer.name} (${trainer.focus})`;
+            }
+            
+            // Weight Goal Slider Update
+            function updateSliderValue() {
+                const goalWeight = parseFloat(weightGoalSlider.value);
+                sliderValue.textContent = `${goalWeight.toFixed(1)} kg`;
+                
+                const weightDifference = (CURRENT_WEIGHT - goalWeight).toFixed(1);
+                
+                const goal = goalWeight;
+                const startWeight = 85; 
+                const totalChangeNeeded = (startWeight - goal);
+                const changeMade = (startWeight - CURRENT_WEIGHT);
+                
+                let progressPercentage = 0;
+                if (totalChangeNeeded > 0) {
+                    progressPercentage = Math.min(100, Math.max(0, (changeMade / totalChangeNeeded) * 100));
+                } else if (goal <= CURRENT_WEIGHT) {
+                    progressPercentage = 100;
+                }
+
+                weightProgressBar.style.width = `${progressPercentage.toFixed(1)}%`;
+                weightProgressBar.textContent = `${progressPercentage.toFixed(1)}%`;
+                weightGoalText.textContent = `Goal: ${goalWeight.toFixed(1)} kg (${weightDifference} kg to go)`;
+            }
+
+            // Recipe Modal/Message Handler
+            function handleViewRecipes() {
+                const mealList = Object.values(recipes).map(recipe => 
+                    `
+                    <p style="color:rgb(0, 188, 140); margin-top: 10px; font-weight: bold;">${recipe.title}</p>
+                    <p style="font-size: 14px; margin-bottom: 5px;">Macros: ${recipe.macros}</p>
+                    <p style="font-size: 14px; color: #ccc;">Ingredients: ${recipe.ingredients.join(', ')}</p>
+                    `
+                ).join('<hr style="border-color: #333; margin: 10px 0;">');
+
+                const messageContent = `
+                    <h3 style="color:rgb(0, 188, 140); margin-bottom: 10px;">Full Recipe Details</h3>
+                    ${mealList}
+                    <p style="margin-top: 15px; font-style: italic; color: #ddd;">Follow these guides for best results in your high-protein, low-carb plan!</p>
+                `;
+                
+                showMessage(messageContent, 'info');
+            }
+
+            // Chat Rendering and Logic
+            function renderChat() {
+                const trainer = trainers.find(t => t.id === selectedTrainerId);
+                chatTrainerInfo.textContent = `Messaging with ${trainer.name} (${trainer.focus})`;
+                
+                // FIX APPLIED HERE: Update the input placeholder to show the correct trainer's name
+                messageInput.placeholder = `Type your message to ${trainer.name}...`;
+
+                const currentHistory = chatHistory[selectedTrainerId] || [];
+                chatMessagesContainer.innerHTML = '';
+
+                if (currentHistory.length === 0) {
+                    chatMessagesContainer.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Start a conversation with your trainer!</div>';
+                }
+
+                currentHistory.forEach(msg => {
+                    const bubble = document.createElement('div');
+                    bubble.className = `chat-bubble ${msg.sender === 'client' ? 'sent' : 'received'}`;
+                    bubble.textContent = msg.message;
+                    chatMessagesContainer.appendChild(bubble);
+                });
+
+                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+            }
+
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                const trainerId = selectedTrainerId;
+                if (!message) return;
+                if (!chatHistory[trainerId]) chatHistory[trainerId] = [];
+                chatHistory[trainerId].push({ sender: 'client', message: message });
+                messageInput.value = '';
+                renderChat();
+                setTimeout(() => {
+                    let reply;
+                    const currentTrainer = trainers.find(t => t.id === trainerId);
+                    if (message.toLowerCase().includes('meal plan') || message.toLowerCase().includes('food')) {
+                        reply = "That's a great question about the meal plan! I've sent you a detailed response to your email and updated the plan for tomorrow. Check it out!";
+                    } else if (message.toLowerCase().includes('workout') || message.toLowerCase().includes('exercise')) {
+                         reply = "Got your question on the workout! Let's schedule a quick call tomorrow to clarify your form/routine. In the meantime, try reducing the weight slightly.";
+                    } else if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
+                        reply = `Hello! How can I assist you with your ${currentTrainer.focus} goals today?`;
+                    } else {
+                        reply = `Thanks for your message. ${currentTrainer.name} is reviewing it now and will send a detailed response shortly. Keep crushing your goals!`;
+                    }
+
+                    chatHistory[trainerId].push({ sender: 'trainer', message: reply });
+                    renderChat();
+                    showMessage(`Trainer ${currentTrainer.name} replied!`, 'success');
+                }, 1500); 
+            }
+            window.sendMessage = sendMessage;
+            
+            // BMI Calculation Logic (Replaces Logic from bmi.html)
+            function handleCalculateBMI() {
+                const weight = parseFloat(calcWeight.value);
+                const height = parseFloat(calcHeight.value); // in cm
+                const name = document.getElementById('calcName').value.trim() || 'User';
+
+                if (isNaN(weight) || weight <= 0 || isNaN(height) || height <= 0) {
+                    showMessage('Please enter valid positive values for weight and height.', 'warning');
+                    resultBMI.textContent = '-';
+                    resultStatus.textContent = '-';
+                    resultStatus.className = 'status';
+                    return;
+                }
+
+                const heightInMeter = height / 100;
+                const bmi = weight / (heightInMeter * heightInMeter);
+                resultBMI.textContent = bmi.toFixed(2);
+
+                let statusText;
+                let statusClass;
+
+                if (bmi < 18.5) {
+                    statusText = "Underweight";
+                    statusClass = "under"; 
+                } else if (bmi >= 18.5 && bmi < 24.9) {
+                    statusText = "Normal (Healthy)";
+                    statusClass = "normal";
+                } else if (bmi >= 25 && bmi < 29.9) {
+                    statusText = "Overweight";
+                    statusClass = "over";
+                } else {
+                    statusText = "Obese";
+                    statusClass = "obese";
+                }
+
+                resultStatus.textContent = statusText;
+                resultStatus.className = `status ${statusClass}`;
+                // Using statusMessage instead of forbidden alert()
+                showMessage(`${name}, your BMI is ${bmi.toFixed(2)}. Status: ${statusText}`, 'info');
+            }
+            window.handleCalculateBMI = handleCalculateBMI; 
+
+            // New/Modified Function to update all user name displays
+            function updateUserNameDisplay(name, memberSince) {
+                // 1. Dashboard Header
+                if (userNameHeader) userNameHeader.textContent = name;
+                if (memberSinceHeader) memberSinceHeader.textContent = `Member since: ${memberSince}`;
+
+                // 2. Settings Profile Card
+                if (userNameSettingsCard) userNameSettingsCard.textContent = name;
+                if (memberSinceSettingsCard) memberSinceSettingsCard.textContent = `Member since: ${memberSince}`;
+                
+                // 3. Settings Form Input & BMI Input (Ensure form value is set)
+                if (userNameInput) userNameInput.value = name;
+                if (document.getElementById('calcName')) document.getElementById('calcName').value = name;
+            }
 
 
+            // Initial Setup
+            showPage('dashboard'); 
+            renderTrainerSelection(); 
+            updateSliderValue();
+            updateUserNameDisplay(CURRENT_USER_NAME, CURRENT_MEMBER_SINCE); // Initial display setup
+
+            // Event Listeners
+            menuLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.getAttribute('data-page');
+                    showPage(page);
+                });
+            });
+
+            trainerSelect.addEventListener('change', (e) => {
+                const newTrainerId = parseInt(e.target.value);
+                selectedTrainerId = newTrainerId;
+                isScheduleExpanded = false;
+                showMessage(`Trainer switched to ${trainers.find(t => t.id === newTrainerId).name}. Dashboard updated.`, 'info');
+                refreshDashboard();
+                if (mainContentAreas.chat.style.display !== 'none') {
+                    renderChat();
+                }
+            });
+
+            weightGoalSlider.addEventListener('input', updateSliderValue);
+
+            viewAllMealsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                isMealsExpanded = !isMealsExpanded;
+                renderMeals();
+            });
+
+            viewScheduleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                isScheduleExpanded = !isScheduleExpanded;
+                renderSchedule();
+            });
+            
+            viewRecipesBtn.addEventListener('click', handleViewRecipes);
+
+            document.body.addEventListener('click', (e) => {
+                 const button = e.target;
+                 if (button.matches('#schedule-body .btn.primary')) {
+                     e.preventDefault();
+                     const activityId = parseInt(button.dataset.id);
+                     const trainerId = parseInt(button.dataset.trainerId);
+                     const schedule = scheduleMap[trainerId];
+                     const item = schedule.find(d => d.id === activityId);
+                     
+                     if (item && item.status === 'Pending' && (button.dataset.action === 'start' || button.dataset.action === 'log')) {
+                          item.status = 'Completed';
+                          renderSchedule();
+                          showMessage(`✅ ${item.activity} logged as completed!`, 'success');
+                     } else if (button.dataset.action === 'details') {
+                          showMessage(`ℹ️ Details for ${item.activity}: Task is marked as complete.`, 'info');
+                     }
+                    }
+            });
+           
+            // Chart Loading Handlers
+             weightChartBtn.addEventListener('click', () => {
+                 if (weightChartInstance) weightChartInstance.destroy();
+                 weightChartContainer.innerHTML = '<canvas id="weightLineChart"></canvas>';
+                 weightChartInstance = new Chart(document.getElementById('weightLineChart'), { 
+                     type: 'line', 
+                     data: { 
+                         labels: ['W1', 'W2', 'W3', 'W4'], 
+                         datasets: [{ 
+                             label: 'Weight (kg)', 
+                             data: [79.5, 79.0, 78.8, 78.5], 
+                             borderColor: 'rgb(0, 188, 140)', 
+                             tension: 0.4 
+                         }] 
+                     }, 
+                     options: { 
+                         scales: { 
+                             y: { 
+                                 min: 78, max: 80, 
+                                 ticks: { color: '#fff' }, 
+                                 grid: { color: 'rgba(255, 255, 255, 0.1)' } 
+                             }, 
+                             x: { 
+                                 ticks: { color: '#fff' }, 
+                                 grid: { color: 'rgba(255, 255, 255, 0.1)' } 
+                             } 
+                         }, 
+                         plugins: { legend: { labels: { color: '#fff' } } }, 
+                         maintainAspectRatio: false 
+                     } 
+                 });
+                 showMessage('Weight progress chart loaded.', 'success');
+             });
+
+             workoutChartBtn.addEventListener('click', () => {
+                 if (workoutChartInstance) workoutChartInstance.destroy();
+                 workoutChartContainer.innerHTML = '<canvas id="workoutBarChart"></canvas>';
+                 workoutChartInstance = new Chart(document.getElementById('workoutBarChart'), { 
+                     type: 'bar', 
+                     data: { 
+                         labels: ['W1', 'W2', 'W3', 'W4'], 
+                         datasets: [{ 
+                             label: 'Completion %', 
+                             data: [80, 85, 87, 90], 
+                             backgroundColor: 'rgba(52, 152, 219, 0.5)' 
+                         }] 
+                     }, 
+                     options: { 
+                         scales: { 
+                             y: { 
+                                 min: 0, max: 100, 
+                                 ticks: { color: '#fff' }, 
+                                 grid: { color: 'rgba(255, 255, 255, 0.1)' } 
+                             }, 
+                             x: { 
+                                 ticks: { color: '#fff' }, 
+                                 grid: { color: 'rgba(255, 255, 255, 0.1)' } 
+                             } 
+                         }, 
+                         plugins: { legend: { labels: { color: '#fff' } } }, 
+                         maintainAspectRatio: false 
+                     } 
+                 });
+                 showMessage('Workout consistency chart loaded.', 'success');
+             });
+            
+            // Settings Button Handlers
+            updateInfoBtn.addEventListener('click', () => {
+                const newName = userNameInput.value.trim();
+                
+                if (newName && newName !== CURRENT_USER_NAME) {
+                    // Update simulated state
+                    CURRENT_USER_NAME = newName; 
+                    updateUserNameDisplay(CURRENT_USER_NAME, CURRENT_MEMBER_SINCE);
+                    showMessage(`Profile information updated to "${newName}" successfully!`, 'success');
+                } else {
+                    showMessage('Please enter a valid name.', 'warning');
+                }
+            });
+
+            changePasswordBtn.addEventListener('click', () => showMessage('Password change request sent. Check your email.', 'info'));
+            saveNotificationsBtn.addEventListener('click', () => showMessage('Notification preferences saved successfully!', 'success'));
+            
+            // Logout handler (Replaces confirm())
+            logoutBtn.addEventListener('click', () => {
+                // The confirm dialog has been replaced with a non-blocking message.
+                showMessage('You have successfully logged out of Health Tracker. See you soon!', 'info');
+                setTimeout(() => showPage('dashboard'), 2000); // Simulate redirect/reset
+            });
+
+        });
     </script>
 </body>
-
 
 </html>
