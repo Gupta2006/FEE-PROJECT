@@ -1,3 +1,4 @@
+the site is not loading it is showing loading data from database but is not able to do so 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,392 +6,690 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Health Monitoring System - Trainer Dashboard">
     <title>Trainer Dashboard - Health Monitoring System</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth; 
     }
 
     body {
-      background-color: #121212;
-      color: rgb(224, 224, 224);
-      line-height: 1.6;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #121212;
+        color: rgb(224, 224, 224);
+        line-height: 1.6;
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        display: flex;
     }
 
     .wrapper {
-      display: flex;
-      min-height: 100vh;
+        display: flex;
+        width: 100%;
+        max-width: 100vw;
     }
 
-    /* Sidebar */
     .sidebar {
-      width: 250px;
-      background: rgb(34, 34, 34);
-      color: white;
+        width: 250px;
+        background: rgb(34, 34, 34);
+        color: white;
+        flex-shrink: 0;
+        /* --- FIXED NAVBAR CHANGES START --- */
+        position: fixed;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        overflow-y: auto;
+        /* --- FIXED NAVBAR CHANGES END --- */
     }
+    
+    .main {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #151515;
+        /* --- FIXED NAVBAR CHANGES START --- */
+        margin-left: 250px; /* Offset to clear fixed sidebar */
+        /* --- FIXED NAVBAR CHANGES END --- */
+    }
+
 
     .brand {
-      padding: 20px;
-      background: rgb(34, 34, 34);
-      text-align: center;
+        padding: 20px;
+        background: rgb(34, 34, 34);
+        text-align: center;
+        border-bottom: 1px solid #2a2a2a;
     }
 
     .brand h2 {
-      font-size: 22px;
-      margin-top: 10px;
-      color: rgb(0, 188, 140);
+        font-size: 22px;
+        margin-top: 10px;
+        color: rgb(0, 188, 140);
+        font-weight: 700;
     }
 
     .menu ul {
-      list-style: none;
-      padding: 10px 0;
+        list-style: none;
+        padding: 10px 0;
     }
 
     .menu li {
-      margin: 5px 0;
+        margin: 5px 0;
+        border-radius: 8px;
     }
 
     .menu a {
-      padding: 12px 20px;
-      display: block;
-      color: #ddd;
-      text-decoration: none;
-      transition: all 0.3s;
-      font-size: 16px;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        color: #ddd;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-size: 16px;
+        border-radius: 8px;
     }
 
     .menu a:hover,
     .menu a.active {
-      background: rgb(51, 51, 51);
-      color: white;
-      border-left: 4px solid rgb(0, 188, 140);
+        background: rgba(0, 188, 140, 0.1);
+        color: white;
+        border-left: 4px solid rgb(0, 188, 140);
+        margin-left: -4px;
     }
 
     .menu .icon {
-      margin-right: 10px;
-      width: 20px;
-      display: inline-block;
-      text-align: center;
+        margin-right: 12px;
+        width: 20px;
+        display: inline-block;
+        text-align: center;
+        font-size: 18px;
     }
 
-    /* Main Content */
-    .main {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      background-color: #151515;
-    }
+    /* .main styles moved up for clarity in fixed layout */
 
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid rgb(102, 102, 102);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgb(51, 51, 51);
+        position: relative; /* Needed for absolute positioning of notifications */
     }
 
     .header h1 {
-      color: rgb(0, 188, 140);
-      font-size: 28px;
+        color: rgb(0, 188, 140);
+        font-size: 28px;
+        font-weight: 800;
     }
 
     .user {
-      display: flex;
-      align-items: center;
-      background: rgb(51, 51, 51);
-      padding: 10px 15px;
-      border-radius: 8px;
+        display: flex;
+        align-items: center;
+        background: rgb(34, 34, 34);
+        padding: 10px 15px;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      margin-right: 12px;
-      border: 2px solid rgb(0, 188, 140);
-      object-fit: cover;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        margin-right: 12px;
+        border: 3px solid rgb(0, 188, 140);
+        object-fit: cover;
     }
 
     .details h4 {
-      margin-bottom: 3px;
-      font-size: 16px;
+        margin-bottom: 3px;
+        font-size: 16px;
+        font-weight: 600;
     }
 
     .details p {
-      color: rgb(149, 165, 166);
-      font-size: 13px;
+        color: rgb(149, 165, 166);
+        font-size: 13px;
     }
 
-    /* Dashboard Cards */
     .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
     }
 
     .card {
-      background: rgb(26, 26, 26);
-      border-radius: 8px;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-      border: 1px solid #2a2a2a;
-      transition: transform 0.3s, box-shadow 0.3s;
+        background: rgb(26, 26, 26);
+        border-radius: 12px;
+        padding: 25px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #2a2a2a;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        transform: translateY(-8px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     }
 
     .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 5px;
-      height: 100%;
-      background-color: rgb(0, 188, 140);
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background-color: rgb(0, 188, 140);
+        border-radius: 12px 0 0 12px;
     }
 
     .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
     }
 
     .title {
-      font-size: 18px;
-      color: rgb(0, 188, 140);
+        font-size: 18px;
+        color: rgb(0, 188, 140);
+        font-weight: 600;
     }
 
-    .icon {
-      width: 50px;
-      height: 50px;
-      background: rgb(51, 51, 51);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgb(0, 188, 140);
-      font-size: 22px;
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 188, 140, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgb(0, 188, 140);
+        font-size: 22px;
     }
 
     .value {
-      font-size: 28px;
-      font-weight: bold;
-      margin: 10px 0;
+        font-size: 36px;
+        font-weight: 800;
+        margin: 10px 0;
+        color: white;
     }
 
     .desc {
-      color: rgb(149, 165, 166);
-      font-size: 14px;
+        color: rgb(149, 165, 166);
+        font-size: 14px;
     }
 
-    /* Tables */
     .panel {
-      background: rgb(26, 26, 26);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 30px;
-      overflow-x: auto;
-      border: 1px solid #2a2a2a;
+        background: rgb(26, 26, 26);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        overflow-x: auto;
+        border: 1px solid #2a2a2a;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .topbar .group {
+        display: flex;
+        gap: 10px;
     }
 
     .heading {
-      font-size: 20px;
-      color: rgb(0, 188, 140);
+        font-size: 24px;
+        color: rgb(0, 188, 140);
+        font-weight: 700;
     }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
     }
 
     th, td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #333;
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #333;
     }
 
     th {
-      background-color: rgb(34, 34, 34);
-      color: rgb(0, 188, 140);
-      font-weight: 600;
+        background-color: rgb(34, 34, 34);
+        color: rgb(0, 188, 140);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 13px;
     }
 
     tr:nth-child(even) {
-      background-color: #1e1e1e;
+        background-color: #1e1e1e;
     }
 
     tr:hover {
-      background-color: #252525;
+        background-color: #252525;
+        transition: background-color 0.2s;
     }
 
     .btn {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-size: 12px;
     }
 
     .btn:active {
-      transform: scale(0.95);
+        transform: scale(0.98);
+        box-shadow: none;
     }
 
     .primary {
-      background: rgb(0, 188, 140);
-      color: white;
+        background: rgb(0, 188, 140);
+        color: #121212;
+        box-shadow: 0 3px 6px rgba(0, 188, 140, 0.3);
     }
 
     .primary:hover {
-      background: rgb(0, 163, 121);
+        background: rgb(0, 163, 121);
+    }
+
+    .danger {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .danger:hover {
+        background: #c0392b;
     }
 
     .success {
-      background: rgb(0, 188, 140);
-      color: white;
+        background: rgb(0, 188, 140);
+        color: white;
+    }
+    
+    .success:hover {
+        background: rgb(0, 163, 121);
     }
 
+
     .badge {
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 14px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-block;
     }
 
     .good {
-      background: rgba(0, 188, 140, 0.2);
-      color: rgb(0, 188, 140);
+        background: rgba(0, 188, 140, 0.15);
+        color: rgb(0, 188, 140);
     }
 
     .waiting {
-      background: rgba(243, 156, 18, 0.2);
-      color: rgb(243, 156, 18);
+        background: rgba(243, 156, 18, 0.15);
+        color: rgb(243, 156, 18);
+    }
+    
+    .completed {
+        background: rgba(0, 188, 140, 0.15);
+        color: rgb(0, 188, 140);
     }
 
-    /* Charts */
+    .upcoming {
+        background: rgba(52, 152, 219, 0.15);
+        color: rgb(52, 152, 219);
+    }
+
+
     .charts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
     }
 
     .chart {
-      background: rgb(26, 26, 26);
-      border-radius: 8px;
-      padding: 20px;
-      border: 1px solid #2a2a2a;
+        background: rgb(26, 26, 26);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #2a2a2a;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .chart-container {
+        height: 300px;
+        width: 100%;
+        margin: auto;
     }
 
     .placeholder {
-      height: 300px;
-      background: #1e1e1e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      color: rgb(149, 165, 166);
-      font-style: italic;
-      border: 1px dashed #333;
-      animation: fadeIn 2s ease-in-out;
+        height: 300px;
+        background: #1e1e1e;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: rgb(149, 165, 166);
+        font-style: italic;
+        border: 2px dashed #333;
+        animation: fadeIn 1.5s ease-in-out;
+        gap: 10px;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
     }
 
-    /* Responsive */
-    @media (max-width: 992px) {
-      .charts {
-        grid-template-columns: 1fr;
-      }
+    .modal-overlay.open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-content {
+        background: #1e1e1e;
+        padding: 30px;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        transform: translateY(-50px);
+        transition: transform 0.3s;
+        overflow-y: auto;
+        max-height: 90vh;
+    }
+    
+    .modal-content.lg {
+        max-width: 900px;
+    }
+
+    .modal-overlay.open .modal-content {
+        transform: translateY(0);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+    }
+
+    .modal-header h3 {
+        color: rgb(0, 188, 140);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #999;
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .close-btn:hover {
+        color: white;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #ccc;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #333;
+        border-radius: 6px;
+        background: #2a2a2a;
+        color: white;
+        font-size: 16px;
+        transition: border-color 0.2s;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: rgb(0, 188, 140);
+        outline: none;
+    }
+    
+    .form-group input[type="file"] {
+        padding: 8px 10px;
+        background: #343434;
+        border: 1px solid #444;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+    .checkbox-group input[type="checkbox"] {
+        width: auto;
+        flex-shrink: 0;
+        margin-right: 5px;
+    }
+    .checkbox-group span {
+        font-size: 14px;
+    }
+
+
+    .form-actions {
+        margin-top: 20px;
+        text-align: right;
+    }
+    
+    .sessions-table-container {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .sessions-table-container table {
+        min-width: 100%;
+        margin-top: 10px;
+    }
+    
+    .sessions-table-container th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    @media (max-width: 1024px) {
+        .charts {
+            grid-template-columns: 1fr;
+        }
     }
 
     @media (max-width: 768px) {
-      .wrapper {
-        flex-direction: column;
-      }
+        .wrapper {
+            flex-direction: column;
+        }
 
-      .sidebar {
-        width: 100%;
-      }
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: static; /* Make non-fixed on mobile */
+        }
+        
+        .main {
+             margin-left: 0; /* Remove offset on mobile */
+        }
+        
+        .menu ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0 10px 10px 10px;
+        }
+        
+        .menu li {
+            margin: 5px;
+            flex-grow: 1;
+            min-width: 100px;
+            max-width: 48%;
+        }
 
-      .stats {
-        grid-template-columns: 1fr;
-      }
+        .menu a {
+             justify-content: center;
+             padding: 8px 10px;
+             text-align: center;
+        }
+        
+        .menu .icon {
+            margin-right: 5px;
+        }
 
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
 
-      .user {
-        margin-top: 15px;
-        width: 100%;
-      }
+        .stats {
+            grid-template-columns: 1fr;
+        }
+
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user {
+            margin-top: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            max-width: 95%;
+        }
+        
+        .modal-content.lg {
+            max-width: 95%; 
+        }
+        
+        .header #temp-notification {
+            position: static !important;
+            margin-top: 10px;
+        }
     }
 
     @media (max-width: 480px) {
-      .main {
-        padding: 15px;
-      }
+        .main {
+            padding: 15px;
+        }
 
-      .header h1 {
-        font-size: 24px;
-      }
+        .header h1 {
+            font-size: 24px;
+        }
 
-      .value {
-        font-size: 24px;
-      }
+        .value {
+            font-size: 32px;
+        }
+        
+        .topbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
     }
 
     .hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
-  </style>
+    
+    /* Notification styling for absolute position */
+    #temp-notification {
+        position: absolute;
+        top: 100%; /* Below the header line */
+        left: 0;
+        right: 0;
+        padding: 8px 0;
+        background: #252525;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        opacity: 1;
+        z-index: 100;
+    }
+    </style>
 </head>
 <body>
     <div class="wrapper">
         <aside class="sidebar">
             <div class="brand">
-                <div style="font-size:30px;">❤️</div>
+                <div style="font-size: 40px; color: rgb(0, 188, 140); line-height: 1;">💖</div>
                 <h2>Health Tracker</h2>
             </div>
             <nav class="menu" aria-label="Main navigation">
                 <ul>
-                    <li><a href="#" class="active"><span class="icon">🏠</span> Dashboard</a></li>
-                    <li><a href="#"><span class="icon">👥</span> Clients</a></li>
-                    <li><a href="#"><span class="icon">📊</span> Analytics</a></li>
-                    <li><a href="#"><span class="icon">📅</span> Schedule</a></li>
-                    <li><a href="#"><span class="icon">🍽️</span> Nutrition</a></li>
-                    <li><a href="#"><span class="icon">🏋️</span> Workouts</a></li>
-                    <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
-                    <li><a href="index.html"><span class="icon">🚪</span> Logout</a></li>
+                    <li><a href="#dashboard-stats" class="active"><span class="icon">🏠</span> Dashboard</a></li>
+                    <li><a href="#recent-clients-section"><span class="icon">👥</span> Clients</a></li>
+                    <li><a href="#charts-section"><span class="icon">📊</span> Analytics</a></li>
+                    <li><a href="#sessions-section"><span class="icon">📅</span> Schedule</a></li>
+                    <li><a href="#" id="settings-link"><span class="icon">⚙️</span> Settings</a></li>
                 </ul>
             </nav>
         </aside>
@@ -399,59 +698,60 @@
             <header class="header">
                 <h1>Trainer Dashboard</h1>
                 <div class="user">
-                    <img class="avatar" src="https://images.ctfassets.net/qw8ps43tg2ux/1LPfI8kPATAzojZMBalhli/7dbdddba786444110a762b75977a8fd8/how-it-works-issa-certified-personal-trainer.webp?fm=webp&w=1440&q=75" alt="Trainer Photo">
+                    <img class="avatar" src="https://placehold.co/45x45/00bc8c/ffffff?text=NT" onerror="this.src='https://placehold.co/45x45/515151/ffffff?text=NT';" alt="Trainer Photo of Naman Trainer">
                     <div class="details">
                         <h4>Naman Trainer</h4>
-                        <p>Certified Fitness Coach</p>
+                        <p id="auth-status">Initializing...</p>
+                        <p style="font-size: 10px; color: #555;" id="user-id-display">ID: Loading...</p>
                     </div>
                 </div>
             </header>
 
-            <section aria-labelledby="dashboard-cards-heading">
+            <section aria-labelledby="dashboard-cards-heading" id="dashboard-stats">
                 <h2 id="dashboard-cards-heading" class="hidden">Dashboard Statistics</h2>
                 <div class="stats">
                     <div class="card">
                         <div class="top">
                             <h3 class="title">Total Clients</h3>
-                            <div class="icon">👥</div>
+                            <div class="icon-box">👥</div>
                         </div>
-                        <div class="value">24</div>
-                        <p class="desc">5 new clients this month</p>
+                        <div class="value" id="total-clients-value">0</div>
+                        <p class="desc"><span id="new-clients-desc">Loading activity...</span></p>
                     </div>
 
                     <div class="card">
                         <div class="top">
                             <h3 class="title">Active Plans</h3>
-                            <div class="icon">📋</div>
+                            <div class="icon-box">📋</div>
                         </div>
-                        <div class="value">38</div>
-                        <p class="desc">18 meal plans, 20 workout plans</p>
+                        <div class="value">0</div>
+                        <p class="desc">Data from Firestore</p>
                     </div>
 
                     <div class="card">
                         <div class="top">
-                            <h3 class="title">Monthly Revenue</h3>
-                            <div class="icon">💰</div>
+                            <h3 class="title">Total Sessions</h3>
+                            <div class="icon-box">📅</div>
                         </div>
-                        <div class="value">$2,850</div>
-                        <p class="desc">+$450 from last month</p>
+                        <div class="value" id="total-sessions-value">0</div>
+                        <p class="desc">All recorded sessions</p>
                     </div>
 
                     <div class="card">
                         <div class="top">
-                            <h3 class="title">Avg. Rating</h3>
-                            <div class="icon">⭐</div>
+                            <h3 class="title">Upcoming Today</h3>
+                            <div class="icon-box">⏰</div>
                         </div>
-                        <div class="value">4.7/5</div>
-                        <p class="desc">Based on 18 reviews</p>
+                        <div class="value" id="upcoming-today-value">0</div>
+                        <p class="desc">Sessions scheduled today</p>
                     </div>
                 </div>
             </section>
 
-            <section class="panel" aria-labelledby="recent-clients-heading">
+            <section class="panel" aria-labelledby="recent-clients-heading" id="recent-clients-section">
                 <div class="topbar">
                     <h3 class="heading" id="recent-clients-heading">Recent Clients</h3>
-                    <button class="btn primary">Add New Client</button>
+                    <button class="btn primary" id="add-client-btn">Add New Client</button>
                 </div>
                 <table>
                     <thead>
@@ -465,95 +765,39 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sandeep Kumar</td>
-                            <td>32</td>
-                            <td>Male</td>
-                            <td>24.2</td>
-                            <td>2023-09-15</td>
-                            <td><span class="badge good">Active</span></td>
-                            <td>
-                                <button class="btn primary">View</button>
-                                <button class="btn success">Message</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Naman Gupta</td>
-                            <td>45</td>
-                            <td>Male</td>
-                            <td>28.7</td>
-                            <td>2023-10-02</td>
-                            <td><span class="badge good">Active</span></td>
-                            <td>
-                                <button class="btn primary">View</button>
-                                <button class="btn success">Message</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Karmandeep Singh</td>
-                            <td>29</td>
-                            <td>Female</td>
-                            <td>22.5</td>
-                            <td>2023-10-10</td>
-                            <td><span class="badge waiting">Evaluation</span></td>
-                            <td>
-                                <button class="btn primary">View</button>
-                                <button class="btn success">Message</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>RDJ</td>
-                            <td>38</td>
-                            <td>Male</td>
-                            <td>26.8</td>
-                            <td>2023-09-28</td>
-                            <td><span class="badge good">Active</span></td>
-                            <td>
-                                <button class="btn primary">View</button>
-                                <button class="btn success">Message</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Parampreet Singh</td>
-                            <td>41</td>
-                            <td>Male</td>
-                            <td>25.3</td>
-                            <td>2023-10-05</td>
-                            <td><span class="badge good">Active</span></td>
-                            <td>
-                                <button class="btn primary">View</button>
-                                <button class="btn success">Message</button>
-                            </td>
-                        </tr>
+                    <tbody id="clients-table-body">
+                        <tr><td colspan="7" style="text-align: center; color: #999;">Loading clients from database...</td></tr>
                     </tbody>
                 </table>
             </section>
 
-            <section class="charts" aria-labelledby="charts-heading">
+            <section class="charts" aria-labelledby="charts-heading" id="charts-section">
                 <h2 id="charts-heading" class="hidden">Progress Charts</h2>
                 <div class="chart">
                     <div class="topbar">
-                        <h3 class="heading">Client Progress Overview</h3>
+                        <h3 class="heading">Client BMI Progress Over Time</h3>
                     </div>
-                    <div class="placeholder">
-                        <p>Progress chart visualization would be displayed here</p>
+                    <div class="chart-container">
+                        <canvas id="progress-chart"></canvas>
                     </div>
                 </div>
                 <div class="chart">
                     <div class="topbar">
                         <h3 class="heading">BMI Distribution</h3>
                     </div>
-                    <div class="placeholder">
-                        <p>BMI chart visualization would be displayed here</p>
+                    <div class="chart-container" style="height: 300px; max-width: 400px;">
+                        <canvas id="bmi-distribution-chart"></canvas>
                     </div>
                 </div>
             </section>
 
-            <section class="panel" aria-labelledby="sessions-heading">
+            <section class="panel" aria-labelledby="sessions-heading" id="sessions-section">
                 <div class="topbar">
                     <h3 class="heading" id="sessions-heading">Today's Sessions</h3>
-                    <button class="btn primary">View All</button>
+                    <div class="group">
+                        <button class="btn primary" id="add-session-btn">Add New Session</button>
+                        <button class="btn primary" id="view-all-sessions-btn">View All</button>
+                    </div>
                 </div>
                 <table>
                     <thead>
@@ -565,38 +809,1077 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Parampreet Singh</td>
-                            <td>9:00 AM - 10:00 AM</td>
-                            <td>Strength Training</td>
-                            <td><span class="badge good">Completed</span></td>
-                            <td>
-                                <button class="btn primary">Notes</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Naman Gupta</td>
-                            <td>11:00 AM - 12:00 PM</td>
-                            <td>Cardio</td>
-                            <td><span class="badge waiting">Upcoming</span></td>
-                            <td>
-                                <button class="btn primary">Notes</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Karmandeep Singh</td>
-                            <td>3:00 PM - 4:00 PM</td>
-                            <td>Yoga</td>
-                            <td><span class="badge waiting">Upcoming</span></td>
-                            <td>
-                                <button class="btn primary">Notes</button>
-                            </td>
-                        </tr>
+                    <tbody id="todays-sessions-body">
+                        <tr><td colspan="5" style="text-align: center; color: #999;">Loading sessions from database...</td></tr>
                     </tbody>
                 </table>
             </section>
         </main>
     </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="add-client-modal">
+        <div class="modal-content" id="modal-content-area">
+            <div class="modal-header">
+                <h3 id="modal-title">Modal Title</h3>
+                <button class="close-btn" id="close-modal-btn">&times;</button>
+            </div>
+            
+            <div id="add-client-form-content">
+                <form id="new-client-form">
+                    <div class="form-group">
+                        <label for="client-name">Full Name</label>
+                        <input type="text" id="client-name" name="name" required placeholder="e.g., Jane Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-age">Age</label>
+                        <input type="number" id="client-age" name="age" min="16" max="99" required placeholder="e.g., 35">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-gender">Gender</label>
+                        <select id="client-gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-bmi">BMI (Body Mass Index)</label>
+                        <input type="number" id="client-bmi" name="bmi" step="0.1" min="15" max="50" required placeholder="e.g., 23.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-status">Initial Status</label>
+                        <select id="client-status" name="status" required>
+                            <option value="Active">Active</option>
+                            <option value="Evaluation">Evaluation</option>
+                        </select>
+                    </div>
+                    <div class="form-actions" style="display: flex; justify-content: space-between; align-items: center;">
+                        <button type="button" class="btn danger" id="add-mock-clients-btn" style="background: #3e3e3e; color: white;">Add 5 Mock Clients</button>
+                        <button type="submit" class="btn primary">Save Client</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="client-details-content" style="display: none;">
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, doc, addDoc, updateDoc, deleteDoc, onSnapshot, collection, setLogLevel, query, where, getDocs 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL STATE & FIREBASE VARIABLES ---
+        let db, auth;
+        let userId = null;
+        let localClients = [];
+        let localSessions = [];
+        let progressChartInstance = null;
+        let bmiChartInstance = null;
+        
+        // UI Elements
+        const tableBody = document.getElementById('clients-table-body');
+        const todaysSessionsBody = document.getElementById('todays-sessions-body');
+        const modal = document.getElementById('add-client-modal');
+        const modalContentArea = document.getElementById('modal-content-area');
+        const addClientBtn = document.getElementById('add-client-btn');
+        const addSessionBtn = document.getElementById('add-session-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const clientForm = document.getElementById('new-client-form');
+        const totalClientsValue = document.getElementById('total-clients-value');
+        const newClientsDesc = document.getElementById('new-clients-desc');
+        const viewAllSessionsBtn = document.getElementById('view-all-sessions-btn');
+        const settingsLink = document.getElementById('settings-link');
+        const mockClientsBtn = document.getElementById('add-mock-clients-btn');
+        const modalTitle = document.getElementById('modal-title');
+        const formContent = document.getElementById('add-client-form-content');
+        const detailsContent = document.getElementById('client-details-content');
+        const authStatusDisplay = document.getElementById('auth-status');
+        const userIdDisplay = document.getElementById('user-id-display');
+
+
+        // --- UTILITY FUNCTIONS ---
+
+        function getTodayDate() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        function getSortedClients() {
+            // Sorts clients by join date descending
+            return [...localClients].sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate));
+        }
+        
+        // Function to show custom non-blocking notifications instead of alert/confirm
+        function showCustomMessage(message, type = 'success') {
+            const header = document.querySelector('.header');
+            const existingMsg = document.getElementById('temp-notification');
+            if (existingMsg) existingMsg.remove();
+            
+            const msg = document.createElement('p');
+            msg.id = 'temp-notification';
+            msg.textContent = message;
+            
+            let color = 'rgb(0, 188, 140)'; // Success
+            if (type === 'error') color = '#e74c3c';
+            if (type === 'info') color = '#f39c12';
+            if (type === 'danger') color = '#e74c3c';
+
+            msg.style.color = color;
+            msg.style.fontWeight = '600';
+            msg.style.marginTop = '10px';
+            msg.style.textAlign = 'center';
+            msg.style.width = '100%';
+            msg.style.opacity = '1';
+            msg.style.transition = 'opacity 0.5s';
+            
+            header.appendChild(msg);
+
+            setTimeout(() => msg.style.opacity = '0', 3500);
+            setTimeout(() => msg.remove(), 4000);
+        }
+
+        // --- FIREBASE INITIALIZATION AND CRUD HELPERS ---
+
+        function getClientCollectionRef() {
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            if (!db || !userId) return; 
+            // Private Data Path: /artifacts/{appId}/users/{userId}/clients
+            return collection(db, `artifacts/${appId}/users/${userId}/clients`);
+        }
+        
+        function getSessionCollectionRef() {
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            if (!db || !userId) return;
+            // Private Data Path: /artifacts/{appId}/users/{userId}/sessions
+            return collection(db, `artifacts/${appId}/users/${userId}/sessions`);
+        }
+
+        async function initFirebase() {
+            // Check for configuration availability
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            if (Object.keys(firebaseConfig).length === 0) {
+                 authStatusDisplay.textContent = 'Firebase Config Missing';
+                 userIdDisplay.textContent = 'ID: Cannot connect to DB';
+                 return;
+            }
+
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setLogLevel('Debug'); // Enable Firestore logging
+
+            authStatusDisplay.textContent = 'Authenticating...';
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    authStatusDisplay.textContent = 'Certified Fitness Coach (Online)';
+                    userIdDisplay.textContent = `ID: ${userId}`;
+                    setupFirestoreListeners();
+                } else {
+                    // Attempt sign in
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Firebase Auth Error:", error);
+                        authStatusDisplay.textContent = 'Auth Failed (See Console)';
+                        userIdDisplay.textContent = 'ID: Anonymous Fallback Failed';
+                    }
+                }
+            });
+        }
+        
+        function setupFirestoreListeners() {
+            if (!db || !userId) return;
+
+            // 1. Clients Listener
+            onSnapshot(getClientCollectionRef(), (snapshot) => {
+                localClients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderClientsTable();
+                renderBmiDistributionChart();
+                renderProgressChart(); // Update progress chart on client data change
+                updateDashboardStats();
+            }, (error) => {
+                console.error("Error listening to clients:", error);
+                showCustomMessage("Error loading client data.", 'error');
+            });
+
+            // 2. Sessions Listener
+            onSnapshot(getSessionCollectionRef(), (snapshot) => {
+                localSessions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderSessionsTable();
+                updateDashboardStats();
+            }, (error) => {
+                console.error("Error listening to sessions:", error);
+                showCustomMessage("Error loading session data.", 'error');
+            });
+        }
+        
+        function updateDashboardStats() {
+            totalClientsValue.textContent = localClients.length;
+            
+            // Mocking active plans
+            const activeClients = localClients.filter(c => c.status === 'Active').length;
+            document.querySelector('.stats .card:nth-child(2) .value').textContent = activeClients;
+            document.querySelector('.stats .card:nth-child(2) .desc').textContent = `${localClients.length - activeClients} inactive/evaluation clients`;
+            
+            const totalSessions = localSessions.length;
+            document.getElementById('total-sessions-value').textContent = totalSessions;
+
+            const today = getTodayDate();
+            const upcomingToday = localSessions.filter(s => s.date === today && s.status === 'Upcoming').length;
+            document.getElementById('upcoming-today-value').textContent = upcomingToday;
+            
+            // Mocking new clients for display (since joinDate is just creation date)
+            newClientsDesc.textContent = `${localClients.length} clients tracked in total.`;
+        }
+
+
+        // --- UI RENDERING FUNCTIONS ---
+
+        function renderClientsTable() {
+            tableBody.innerHTML = '';
+            
+            if (localClients.length === 0) {
+                 tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #999; padding: 20px;">No clients found. Click "Add New Client" to start!</td></tr>`;
+                 return;
+            }
+            
+            const sortedClients = getSortedClients();
+
+            sortedClients.forEach((client, index) => {
+                const row = document.createElement('tr');
+                const statusClass = client.status === 'Active' ? 'good' : 'waiting';
+
+                row.innerHTML = `
+                    <td>${client.name}</td>
+                    <td>${client.age}</td>
+                    <td>${client.gender}</td>
+                    <td>${client.bmi.toFixed(1)}</td>
+                    <td>${client.joinDate}</td>
+                    <td><span class="badge ${statusClass}">${client.status}</span></td>
+                    <td>
+                        <button class="btn primary view-client-btn" data-client-id="${client.id}">View</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            // Removed the 'Message' button to clean up unnecessary mock logic.
+        }
+        
+        function renderSessionsTable() {
+            todaysSessionsBody.innerHTML = '';
+
+            const today = getTodayDate();
+            const todaySessions = localSessions
+                .filter(s => s.date === today)
+                .sort((a, b) => a.time.localeCompare(b.time)); // Sort by time
+
+            if (todaySessions.length === 0) {
+                todaysSessionsBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #999; padding: 20px;">
+                            No sessions scheduled for today (${today}). Use the "Add New Session" button to schedule one!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            todaySessions.forEach((session) => {
+                const statusClass = session.status === 'Completed' ? 'completed' : (session.status === 'Upcoming' ? 'upcoming' : 'waiting');
+                const actionText = session.status === 'Completed' ? 'Notes/Review' : 'Edit';
+
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${session.client}</td>
+                    <td>${session.time}</td>
+                    <td>${session.type}</td>
+                    <td><span class="badge ${statusClass}">${session.status}</span></td>
+                    <td>
+                        <button class="btn primary session-edit-btn" 
+                                data-session-id="${session.id}" 
+                                style="padding: 8px 12px; font-size: 11px;">${actionText}</button>
+                    </td>
+                `;
+                todaysSessionsBody.appendChild(row);
+            });
+        }
+
+
+        // --- CHARTING FUNCTIONS ---
+
+        function calculateBmiDistribution() {
+            const distribution = {
+                'Underweight (<18.5)': 0,
+                'Healthy (18.5-24.9)': 0,
+                'Overweight (25-29.9)': 0,
+                'Obese (>=30)': 0
+            };
+
+            localClients.forEach(client => {
+                if (client.bmi < 18.5) {
+                    distribution['Underweight (<18.5)']++;
+                } else if (client.bmi < 25) {
+                    distribution['Healthy (18.5-24.9)']++;
+                } else if (client.bmi < 30) {
+                    distribution['Overweight (25-29.9)']++;
+                } else {
+                    distribution['Obese (>=30)']++;
+                }
+            });
+
+            return distribution;
+        }
+
+        function renderBmiDistributionChart() {
+            const distribution = calculateBmiDistribution();
+            const ctx = document.getElementById('bmi-distribution-chart').getContext('2d');
+            
+            if (bmiChartInstance) {
+                bmiChartInstance.destroy();
+            }
+
+            bmiChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(distribution),
+                    datasets: [{
+                        label: 'Client Count',
+                        data: Object.values(distribution),
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgb(0, 188, 140)',
+                            'rgba(243, 156, 18, 0.7)',
+                            'rgba(231, 76, 60, 0.7)'
+                        ],
+                        borderColor: '#1e1e1e',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ccc',
+                                font: { family: 'Inter', size: 14 }
+                            }
+                        },
+                        tooltip: {
+                             callbacks: {
+                                 label: function(context) {
+                                     let label = context.label || '';
+                                     if (label) { label += ': '; }
+                                     label += context.raw;
+                                     label += (context.raw === 1) ? ' Client' : ' Clients';
+                                     return label;
+                                 }
+                             }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderProgressChart() {
+            const chartCanvas = document.getElementById('progress-chart');
+            const chartContainer = chartCanvas.parentElement;
+
+            if (progressChartInstance) {
+                progressChartInstance.destroy();
+                progressChartInstance = null; // Reset instance after destruction
+            }
+
+            if (!localClients || localClients.length === 0) {
+                // Show placeholder if no data
+                chartCanvas.style.display = 'none';
+                if (!chartContainer.querySelector('.placeholder')) {
+                    chartContainer.innerHTML = `
+                         <canvas id="progress-chart" style="display: none;"></canvas>
+                         <div class="placeholder">
+                             📊 No client data yet to generate progress chart.
+                             <small>Add a client to start tracking metrics!</small>
+                         </div>
+                    `;
+                }
+                return;
+            } 
+            
+            // Remove placeholder and ensure canvas is visible
+            const placeholder = chartContainer.querySelector('.placeholder');
+            if (placeholder) placeholder.remove();
+            chartCanvas.style.display = 'block';
+
+            
+            // --- DATA PROCESSING FOR PROGRESS CHART ---
+            
+            // 1. Filter out clients missing BMI or joinDate
+            const validClients = localClients.filter(c => c.bmi !== undefined && c.joinDate);
+
+            // 2. Group clients by join date
+            const groupedByDate = validClients.reduce((acc, client) => {
+                const bmi = parseFloat(client.bmi);
+                const date = client.joinDate; // Format YYYY-MM-DD
+                
+                if (!acc[date]) {
+                    acc[date] = [];
+                }
+                acc[date].push(bmi);
+                return acc;
+            }, {});
+
+            // 3. Sort dates and calculate rolling average BMI
+            const dates = Object.keys(groupedByDate).sort();
+            
+            let cumulativeBmiSum = 0;
+            let cumulativeClientCount = 0;
+            
+            const chartData = dates.map(date => {
+                const newBmis = groupedByDate[date];
+                const newBmiSum = newBmis.reduce((sum, bmi) => sum + bmi, 0);
+                
+                cumulativeBmiSum += newBmiSum;
+                cumulativeClientCount += newBmis.length;
+                
+                const averageBmi = cumulativeBmiSum / cumulativeClientCount;
+
+                return {
+                    date: date,
+                    averageBmi: parseFloat(averageBmi.toFixed(2))
+                };
+            });
+            
+            // --- RENDER CHART ---
+            
+            const ctx = chartCanvas.getContext('2d');
+            
+            progressChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(d => d.date),
+                    datasets: [
+                        {
+                            label: 'Avg. Client BMI (Rolling)',
+                            data: chartData.map(d => d.averageBmi),
+                            borderColor: 'rgb(0, 188, 140)',
+                            backgroundColor: 'rgba(0, 188, 140, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#ccc', font: { family: 'Inter', size: 14 } }
+                        },
+                        tooltip: {
+                             callbacks: {
+                                 label: function(context) {
+                                     let label = context.dataset.label || '';
+                                     if (label) { label += ': '; }
+                                     label += context.raw;
+                                     return label;
+                                 }
+                             }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: false, 
+                            title: {
+                                display: true,
+                                text: 'Average BMI',
+                                color: '#ccc'
+                            },
+                            grid: { color: '#333' }, 
+                            ticks: { color: '#ccc' }
+                        },
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#ccc' }
+                        }
+                    }
+                }
+            });
+        }
+
+        
+        // --- MODAL & FORM LOGIC ---
+
+        function setupAndOpenModal(title, isLarge = false) {
+            modalContentArea.classList.remove('lg');
+            if (isLarge) {
+                modalContentArea.classList.add('lg');
+            }
+            modalTitle.textContent = title;
+            modal.classList.add('open');
+        }
+
+        window.closeModal = function() {
+            modal.classList.remove('open');
+            clientForm.reset();
+            
+            // Reset modal content visibility for next use
+            formContent.style.display = 'block';
+            detailsContent.style.display = 'none';
+        }
+
+        function showCustomConfirm(title, message, callback) {
+            formContent.style.display = 'none';
+            detailsContent.style.display = 'block';
+            setupAndOpenModal(title, false);
+            
+            detailsContent.innerHTML = `
+                <p style="color: #ccc; margin-bottom: 25px; font-size: 16px;">${message}</p>
+                <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn danger" id="confirm-action-btn">Confirm</button>
+                    <button type="button" class="btn" style="background: #3e3e3e; color: white;" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+
+            document.getElementById('confirm-action-btn').onclick = () => {
+                callback();
+            };
+        }
+
+        async function handleClientFormSubmit(event) {
+            event.preventDefault();
+            if (!getClientCollectionRef()) {
+                showCustomMessage("Data loading... please wait a moment.", 'info');
+                return;
+            }
+
+            const formData = new FormData(clientForm);
+            
+            const now = new Date();
+            const joinDate = getTodayDate();
+            
+            const name = formData.get('name');
+            const nameParts = name.toLowerCase().split(' ');
+            const mockEmail = nameParts.length > 1 
+                ? `${nameParts[0]}.${nameParts[nameParts.length - 1]}@newclient.com`
+                : `${nameParts[0]}.client@newclient.com`;
+
+            const newClient = {
+                name: name,
+                age: parseInt(formData.get('age')),
+                gender: formData.get('gender'),
+                bmi: parseFloat(formData.get('bmi')),
+                joinDate: joinDate,
+                status: formData.get('status'),
+                email: mockEmail
+            };
+
+            try {
+                // Add new client document to Firestore
+                await addDoc(getClientCollectionRef(), newClient);
+                showCustomMessage(`Client ${newClient.name} added successfully!`, 'success');
+                closeModal();
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showCustomMessage("Error adding client. See console.", 'error');
+            }
+        }
+
+        const mockClientData = [
+            { name: "Alex Jones", age: 28, gender: "Male", bmi: 25.1, status: "Active" },
+            { name: "Sara Lee", age: 35, gender: "Female", bmi: 22.9, status: "Active" },
+            { name: "Raj Patel", age: 41, gender: "Male", bmi: 29.5, status: "Evaluation" },
+            { name: "Emily Clark", age: 24, gender: "Female", bmi: 18.2, status: "Active" },
+            { name: "Chris Wu", age: 50, gender: "Male", bmi: 31.0, status: "Active" }
+        ];
+
+        async function addMockClients() {
+            if (!getClientCollectionRef()) {
+                showCustomMessage("Database connection not ready. Please wait.", 'info');
+                return;
+            }
+            closeModal();
+            showCustomMessage("Adding 5 mock clients...", 'info');
+            
+            // To ensure the chart shows *some* progress over time when adding mock data,
+            // we will simulate slightly different join dates for each mock client.
+            const today = new Date(getTodayDate());
+            const clientCollectionRef = getClientCollectionRef();
+            let addedCount = 0;
+
+            for (let i = 0; i < mockClientData.length; i++) {
+                const mock = mockClientData[i];
+                const nameParts = mock.name.toLowerCase().split(' ');
+                const mockEmail = `${nameParts[0]}.${nameParts[nameParts.length - 1]}@mockclient.com`;
+                
+                // Simulate dates ranging from 4 days ago to today (to create graph slope)
+                const mockDate = new Date(today);
+                mockDate.setDate(today.getDate() - (mockClientData.length - 1 - i));
+                
+                const joinDate = `${mockDate.getFullYear()}-${String(mockDate.getMonth() + 1).padStart(2, '0')}-${String(mockDate.getDate()).padStart(2, '0')}`;
+
+
+                const clientData = {
+                    ...mock,
+                    joinDate: joinDate,
+                    // Give a varied BMI over time to show fluctuation
+                    bmi: mock.bmi + (i % 2 === 0 ? 0.5 : -0.5), 
+                    email: mockEmail
+                };
+                
+                try {
+                    await addDoc(clientCollectionRef, clientData);
+                    addedCount++;
+                } catch (e) {
+                    console.error("Error adding mock client:", e);
+                }
+            }
+            showCustomMessage(`${addedCount} mock clients added. Charts updating live!`, 'success');
+        }
+        
+        window.handleSessionFormSubmit = async function(isNew, sessionId) {
+            const statusDiv = document.getElementById('session-save-status');
+            if (!getSessionCollectionRef()) {
+                statusDiv.textContent = 'Database not ready.';
+                statusDiv.style.color = '#e74c3c';
+                return;
+            }
+            
+            const clientName = document.getElementById('session-client').value;
+            const date = document.getElementById('session-date').value;
+            const time = document.getElementById('session-time').value;
+            const type = document.getElementById('session-type').value;
+            const status = document.getElementById('session-status').value;
+            const notes = document.getElementById('session-notes-area').value;
+            
+            if (!clientName || !date || !time || !type || !status) {
+                statusDiv.textContent = 'Please fill in all fields.';
+                statusDiv.style.color = '#e74c3c';
+                return;
+            }
+
+            const sessionData = {
+                client: clientName,
+                date: date,
+                time: time,
+                type: type,
+                status: status,
+                notes: notes
+            };
+
+            try {
+                if (isNew) {
+                    await addDoc(getSessionCollectionRef(), sessionData);
+                    statusDiv.textContent = `New session created successfully!`;
+                } else {
+                    const sessionRef = doc(getSessionCollectionRef(), sessionId);
+                    await updateDoc(sessionRef, sessionData);
+                    statusDiv.textContent = `Session updated successfully!`;
+                }
+                
+                statusDiv.style.color = 'rgb(0, 188, 140)';
+                setTimeout(() => {
+                    closeModal();
+                    showCustomMessage(statusDiv.textContent, 'success');
+                }, 1500);
+
+            } catch (e) {
+                console.error("Error saving session: ", e);
+                statusDiv.textContent = `Error saving session. See console.`;
+                statusDiv.style.color = '#e74c3c';
+            }
+        }
+        
+        // Helper function to delete all sessions associated with a client name
+        async function deleteClientSessions(clientName) {
+            if (!getSessionCollectionRef()) return 0;
+
+            const q = query(getSessionCollectionRef(), where("client", "==", clientName));
+            const querySnapshot = await getDocs(q);
+            
+            let deleteCount = 0;
+            
+            // Delete each session document individually
+            for (const docSnapshot of querySnapshot.docs) {
+                try {
+                    await deleteDoc(doc(getSessionCollectionRef(), docSnapshot.id));
+                    deleteCount++;
+                } catch (e) {
+                    console.error(`Failed to delete session ${docSnapshot.id}:`, e);
+                }
+            }
+            return deleteCount;
+        }
+
+        window.deleteClient = function(clientId) {
+            const client = localClients.find(c => c.id === clientId);
+            if (!client) {
+                showCustomMessage(`Client ID ${clientId} not found.`, 'error');
+                return;
+            }
+
+            showCustomConfirm(
+                "Confirm Client Deletion",
+                `Are you sure you want to permanently delete client **${client.name}** and ALL their associated data (sessions, metrics)? This action is irreversible.`,
+                async () => {
+                    closeModal(); // Close the confirmation modal
+
+                    try {
+                        // 1. Delete associated sessions first
+                        const deletedSessions = await deleteClientSessions(client.name);
+                        
+                        // 2. Delete the client document
+                        const clientRef = doc(getClientCollectionRef(), clientId);
+                        await deleteDoc(clientRef);
+                        
+                        showCustomMessage(`Client ${client.name} and ${deletedSessions} associated sessions deleted successfully.`, 'danger');
+                    } catch (error) {
+                        console.error("Error deleting client or sessions: ", error);
+                        showCustomMessage(`Error deleting client. See console for details.`, 'error');
+                    }
+                }
+            );
+        }
+
+        window.deleteSession = function(sessionId) {
+            showCustomConfirm(
+                "Confirm Session Deletion",
+                "Are you sure you want to delete this session? This action cannot be undone.",
+                async () => {
+                    closeModal(); 
+                    try {
+                        const sessionRef = doc(getSessionCollectionRef(), sessionId);
+                        await deleteDoc(sessionRef);
+                        showCustomMessage('Session successfully deleted.', 'danger');
+                    } catch (error) {
+                        console.error("Error deleting session: ", error);
+                        showCustomMessage('Error deleting session. See console.', 'error');
+                    }
+                }
+            );
+        }
+
+        function showSessionForm(sessionId) {
+            const isNew = sessionId === null;
+            const sessionData = isNew ? null : localSessions.find(s => s.id === sessionId);
+            if (!isNew && !sessionData) {
+                 showCustomMessage(`Session with ID ${sessionId} not found.`, 'error');
+                 return;
+            }
+
+            formContent.style.display = 'none';
+            detailsContent.style.display = 'block';
+            setupAndOpenModal(isNew ? "Schedule New Session" : `Edit Session: ${sessionData.client}`, false);
+
+            const clientOptions = localClients.map(c => 
+                `<option value="${c.name}" ${sessionData && c.name === sessionData.client ? 'selected' : ''}>${c.name}</option>`
+            ).join('');
+
+            const statusOptions = ['Upcoming', 'Completed', 'Cancelled'].map(s => 
+                `<option value="${s}" ${sessionData && s === sessionData.status ? 'selected' : ''}>${s}</option>`
+            ).join('');
+
+            const isCompleted = sessionData && sessionData.status === 'Completed';
+            const notesPlaceholder = isCompleted 
+                ? "Enter detailed feedback, performance metrics, and next session plan here..."
+                : "Record initial goals, preparation status, or schedule reminders...";
+            const initialNotes = isNew ? '' : sessionData.notes;
+            const submitButtonText = isNew ? 'Schedule Session' : (isCompleted ? 'Update Notes/Review' : 'Save Changes');
+            const clientInputDisabled = !isNew ? 'disabled' : '';
+
+            detailsContent.innerHTML = `
+                <form id="session-form">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="session-client">Client</label>
+                            <select id="session-client" name="client" required ${clientInputDisabled}>
+                                <option value="">Select Client</option>
+                                ${clientOptions}
+                            </select>
+                            ${!isNew ? `<input type="hidden" name="client-name-fixed" id="client-name-fixed" value="${sessionData.client}">` : ''}
+                        </div>
+                        <div class="form-group">
+                            <label for="session-type">Type</label>
+                            <input type="text" id="session-type" name="type" required placeholder="e.g., Cardio, Yoga" value="${sessionData ? sessionData.type : ''}">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="session-date">Date</label>
+                            <input type="date" id="session-date" name="date" required value="${sessionData ? sessionData.date : getTodayDate()}">
+                        </div>
+                        <div class="form-group">
+                            <label for="session-time">Time (Start-End)</label>
+                            <input type="text" id="session-time" name="time" required placeholder="e.g., 10:00 AM - 11:00 AM" value="${sessionData ? sessionData.time : '10:00 AM - 11:00 AM'}">
+                        </div>
+                        <div class="form-group">
+                            <label for="session-status">Status</label>
+                            <select id="session-status" name="status" required>
+                                ${statusOptions}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="session-notes-area" style="font-size: 16px;">Session Notes/Details</label>
+                        <textarea id="session-notes-area" rows="8" placeholder="${notesPlaceholder}" style="resize: vertical;">${initialNotes}</textarea>
+                    </div>
+
+                    <div id="session-save-status" style="margin-bottom: 15px; font-size: 12px; color: #999; text-align: center;"></div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn primary" onclick="window.handleSessionFormSubmit(${isNew}, '${isNew ? '' : sessionId}')">${submitButtonText}</button>
+                        ${!isNew ? `<button type="button" class="btn danger" style="margin-left: 10px;" onclick="window.deleteSession('${sessionId}')">Delete Session</button>` : ''}
+                        <button type="button" class="btn" style="background: #3e3e3e; color: white; margin-left: 10px;" onclick="closeModal()">Close</button>
+                    </div>
+                </form>
+            `;
+            // If editing, manually set the disabled select value from the hidden input
+            if (!isNew) {
+                document.getElementById('session-client').value = sessionData.client;
+            }
+        }
+
+        function showClientDetails(clientId) {
+            const client = localClients.find(c => c.id === clientId);
+            if (!client) {
+                 showCustomMessage(`Client ID ${clientId} not found.`, 'error');
+                 return;
+            }
+            
+            formContent.style.display = 'none';
+            detailsContent.style.display = 'block';
+            setupAndOpenModal(`Client Profile: ${client.name}`, false);
+            
+            const statusClass = client.status === 'Active' ? 'good' : 'waiting';
+
+            detailsContent.innerHTML = `
+                <div style="padding: 15px; border-radius: 8px; background: #2a2a2a; margin-bottom: 20px; border-left: 3px solid rgb(0, 188, 140);">
+                    <p style="font-weight: 600; color: rgb(0, 188, 140); margin-bottom: 10px; font-size: 1.2em;">Key Metrics</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                        <p><strong>Age:</strong> ${client.age}</p>
+                        <p><strong>Gender:</strong> ${client.gender}</p>
+                        <p><strong>BMI:</strong> ${client.bmi.toFixed(1)}</p>
+                        <p><strong>Status:</strong> <span class="badge ${statusClass}">${client.status}</span></p>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 14px;"><strong>Email:</strong> ${client.email}</p>
+                    <p style="margin-top: 5px; font-size: 14px;"><strong>Joined:</strong> ${client.joinDate}</p>
+                </div>
+                <p style="color: #ccc; margin-bottom: 15px;">This view provides an overview. Full analytics are available on the dedicated client page.</p>
+
+                <div class="form-actions" style="display: flex; justify-content: space-between;">
+                    <button type="button" class="btn danger" onclick="window.deleteClient('${client.id}')">Delete Client</button>
+                    <button type="button" class="btn primary" onclick="closeModal()">Close Profile</button>
+                </div>
+            `;
+        }
+        
+        function showSettings() {
+            formContent.style.display = 'none';
+            detailsContent.style.display = 'block';
+            setupAndOpenModal("Trainer Settings & Administration", false);
+
+            detailsContent.innerHTML = `
+                <div style="padding: 15px; border-radius: 8px; background: #2a2a2a; margin-bottom: 20px; border-left: 3px solid #3498db;">
+                    <p style="font-weight: 600; color: #3498db; margin-bottom: 15px; font-size: 1.2em;">Profile & Authentication</p>
+                    <div class="form-group">
+                        <label for="trainer-name-input">Trainer Name</label>
+                        <input type="text" id="trainer-name-input" value="Naman Trainer" placeholder="Naman Trainer" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="trainer-id-input">User ID</label>
+                        <input type="text" id="trainer-id-input" value="${userId || 'Not Authenticated'}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="trainer-email-input">Email (Mock)</label>
+                        <input type="email" id="trainer-email-input" value="naman.trainer@health.com" placeholder="email" disabled>
+                    </div>
+                    <button class="btn primary" style="padding: 8px 15px; font-size: 14px;">Update Info (Mock)</button>
+                    <button type="button" class="btn" style="background: #3e3e3e; color: white; padding: 8px 15px; font-size: 14px; margin-left: 10px;">Change Password (Mock)</button>
+                </div>
+                
+                <div style="padding: 15px; border-radius: 8px; background: #2a2a2a; margin-bottom: 20px; border-left: 3px solid #f39c12;">
+                    <p style="font-weight: 600; color: #f39c12; margin-bottom: 10px; font-size: 1.2em;">Notification Preferences (Mock)</p>
+                    <label class="checkbox-group">
+                        <input type="checkbox" checked>
+                        <span>Email alerts for new clients</span>
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" checked>
+                        <span>In-app reminders 1 hour before session</span>
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox">
+                        <span>Daily summary report email</span>
+                    </label>
+                </div>
+                <div class="form-actions" style="margin-top: 30px; text-align: center;">
+                    <button type="button" class="btn" onclick="window.mockLogout()" style="background: #e74c3c; color: white; width: 100%; max-width: 300px; box-shadow: 0 3px 6px rgba(231, 76, 60, 0.4); display: inline-flex; align-items: center; justify-content: center;">
+                        <span class="icon" style="margin-right: 10px;">🚪</span> LOGOUT
+                    </button>
+                </div>
+            `;
+        }
+        
+        window.mockLogout = function() {
+            showCustomConfirm(
+                "Confirm Logout",
+                "Are you sure you want to log out? You will need to refresh the page or restart the app to log back in.",
+                async () => {
+                    closeModal(); 
+                    try {
+                        await signOut(auth);
+                        authStatusDisplay.textContent = 'Logged Out';
+                        userIdDisplay.textContent = 'ID: Disconnected';
+                        showCustomMessage('Successfully logged out.', 'info');
+                    } catch (error) {
+                         showCustomMessage('Error logging out. See console.', 'error');
+                    }
+                }
+            );
+        } 
+        
+        function showAllSessions() {
+            formContent.style.display = 'none';
+            detailsContent.style.display = 'block';
+            setupAndOpenModal("All Session History (Sortable)", true);
+            
+            // Sort by date descending
+            const sortedSessions = [...localSessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            let tableRows = '';
+            
+            if (sortedSessions.length === 0) {
+                 tableRows = `<tr><td colspan="6" style="text-align: center; color: #999; padding: 20px;">No sessions recorded yet.</td></tr>`;
+            } else {
+                 sortedSessions.forEach(session => {
+                     const statusClass = session.status === 'Completed' ? 'good' : (session.status === 'Upcoming' ? 'upcoming' : 'waiting');
+                     tableRows += `
+                         <tr>
+                             <td>${session.date}</td>
+                             <td>${session.client}</td>
+                             <td>${session.time}</td>
+                             <td>${session.type}</td>
+                             <td><span class="badge ${statusClass}">${session.status}</span></td>
+                             <td>
+                                 <button class="btn primary session-edit-btn" 
+                                     data-session-id="${session.id}" 
+                                     style="padding: 5px 10px; font-size: 10px;">Details/Edit</button>
+                             </td>
+                         </tr>
+                     `;
+                 });
+            }
+
+            detailsContent.innerHTML = `
+                <p style="color: #ccc; margin-bottom: 15px;">This view contains all recorded client sessions, past and future.</p>
+                <div class="sessions-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn primary" onclick="closeModal()">Close List</button>
+                </div>
+            `;
+        }
+
+
+        // --- EVENT LISTENERS ---
+        
+        addClientBtn.addEventListener('click', () => {
+             // Reset form content to show client add form
+             clientForm.reset();
+             formContent.style.display = 'block';
+             detailsContent.style.display = 'none';
+             setupAndOpenModal("Add New Client Details", false);
+        });
+
+        mockClientsBtn.addEventListener('click', addMockClients);
+
+        addSessionBtn.addEventListener('click', () => showSessionForm(null));
+        
+        settingsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSettings();
+        });
+        
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        clientForm.addEventListener('submit', handleClientFormSubmit);
+        
+        // Delegated event listener for clients table
+        tableBody.addEventListener('click', (e) => {
+            const target = e.target;
+            const clientId = target.dataset.clientId;
+            
+            if (!clientId) return;
+
+            if (target.classList.contains('view-client-btn')) {
+                showClientDetails(clientId);
+            } 
+            // Removed 'message-client-btn' logic
+        });
+
+        // Delegated event listener for today's sessions table
+        todaysSessionsBody.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.classList.contains('session-edit-btn')) {
+                const sessionId = target.dataset.sessionId;
+                showSessionForm(sessionId);
+            }
+        });
+
+        // Delegated event listener for all sessions modal table
+        modal.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.classList.contains('session-edit-btn') && modalContentArea.classList.contains('lg')) {
+                const sessionId = target.dataset.sessionId;
+                showSessionForm(sessionId);
+            }
+        });
+
+        viewAllSessionsBtn.addEventListener('click', showAllSessions);  
+        
+        window.addEventListener('load', () => {
+            initFirebase();
+            // Initial render of progress chart is now handled inside setupFirestoreListeners after data is fetched.
+        });
+
+    </script>
 </body>
 </html>
