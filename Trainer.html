@@ -816,7 +816,6 @@
         </main>
     </div>
 
-    <!-- Modals -->
     <div class="modal-overlay" id="add-client-modal">
         <div class="modal-content" id="modal-content-area">
             <div class="modal-header">
@@ -866,6 +865,20 @@
         </div>
     </div>
     
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKM-qEJ9g8SYYa6ZayvaePTAiyXoyxVtc",
+            authDomain: "healthverse-bcca4.firebaseapp.com",
+            projectId: "healthverse-bcca4",
+            storageBucket: "healthverse-bcca4.firebasestorage.app",
+            messagingSenderId: "642733420902",
+            appId: "1:642733420902:web:f0e3b4de7a990cefbe98a7"
+            
+        };
+        var __firebase_config = JSON.stringify(firebaseConfig);
+        var __app_id = firebaseConfig.projectId || 'health-tracker-app'; 
+        var __initial_auth_token = ""; 
+    </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -946,6 +959,7 @@
         // --- FIREBASE INITIALIZATION AND CRUD HELPERS ---
 
         function getClientCollectionRef() {
+            // This is where the injected __app_id is used.
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             if (!db || !userId) return; 
             // Private Data Path: /artifacts/{appId}/users/{userId}/clients
@@ -953,6 +967,7 @@
         }
         
         function getSessionCollectionRef() {
+            // This is where the injected __app_id is used.
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             if (!db || !userId) return;
             // Private Data Path: /artifacts/{appId}/users/{userId}/sessions
@@ -960,7 +975,7 @@
         }
 
         async function initFirebase() {
-            // Check for configuration availability
+            // Check for configuration availability from the injected global variable.
             const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
             if (Object.keys(firebaseConfig).length === 0) {
                  authStatusDisplay.textContent = 'Firebase Config Missing';
@@ -985,8 +1000,10 @@
                     // Attempt sign in
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            // Uses the injected token if available
                             await signInWithCustomToken(auth, __initial_auth_token);
                         } else {
+                            // Fallback to anonymous sign-in if no custom token is provided
                             await signInAnonymously(auth);
                         }
                     } catch (error) {
