@@ -30,7 +30,7 @@
                   </transition>
                 </div>
               </div>
-              <label for="cardNumber" class="card-item__number" ref="cardNumber">
+              <label for="cardNumber" class="card-item__number" ref="cardNumber" >
                 <template v-if="getCardType === 'amex'">
                  <span v-for="(n, $index) in amexCardMask" :key="$index">
                   <transition name="slide-fade-up">
@@ -162,9 +162,18 @@
           </div>
         </div>
 
-        <button class="card-form__button">
-          Submit
-        </button>
+        <button class="card-form__button" onclick="redirectPage()">
+  Submit
+</button>
+
+<script>
+function redirectPage() {
+  window.location.href = "http://localhost:5500/";
+}
+</script>
+
+
+
       </div>
     </div>
     
